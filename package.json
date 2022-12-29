@@ -12,6 +12,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "ansi-to-html": "^0.7.2",
     "@monaco-editor/loader": "^1.3.2",
     "ant-design-vue": "^1.7.8",
     "core-js": "^3.8.3",
