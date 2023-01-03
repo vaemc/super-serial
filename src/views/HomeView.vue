@@ -13,7 +13,16 @@
               </a-tab-pane>
               <a-tab-pane key="2" tab="十六进制" force-render> </a-tab-pane>
               <a-tab-pane key="3" tab="日志">
-                <div v-html="logHtml" style="white-space: pre"></div>
+                <mavon-editor
+                  id="logHtml"
+                  style="height: 72vh"
+                  :subfield="false"
+                  defaultOpen="preview"
+                  :boxShadow="false"
+                  v-model="logHtml"
+                  :xssOptions="xssOptions"
+                  :toolbarsFlag="false"
+                />
               </a-tab-pane>
             </a-tabs>
 
@@ -56,8 +65,8 @@
                   </a-select-option>
                 </a-select>
               </a-form-item>
-              <a-form-item label="波特率" @change="baudRateSelectChange">
-                <a-select defaultValue="115200">
+              <a-form-item label="波特率">
+                <a-select defaultValue="115200" @change="baudRateSelectChange">
                   <a-select-option value="9600">9600</a-select-option>
                   <a-select-option value="74880">74880</a-select-option>
                   <a-select-option value="115200">115200</a-select-option>
@@ -117,6 +126,11 @@ export default {
   name: "HomeView",
   data() {
     return {
+      xssOptions: {
+        whiteList: {
+          span: ["style"],
+        },
+      },
       logHtml: "",
       serialPortListSelectValue: "",
       serialPortOperationBtnText: "打开端口",
@@ -132,6 +146,7 @@ export default {
   },
   methods: {
     baudRateSelectChange(value) {
+      console.info(value);
       this.serial.baudRate = value;
     },
     serialPortListSelectChange(value) {
@@ -149,14 +164,14 @@ export default {
           path: this.serialPortListSelectValue,
           baudRate: parseInt(this.serial.baudRate),
         });
-
+        console.info(parseInt(this.serial.baudRate));
         const parser = this.serial.serial1.pipe(
           new ReadlineParser({ delimiter: "\r\n" })
         );
         parser.on("data", (data) => {
           console.info(data);
 
-          this.logHtml += convert.toHtml(data)+ "\r\n";
+          this.logHtml += convert.toHtml(data) + "\r\n";
 
           this.monacoEditor.getModel().applyEdits(
             [
