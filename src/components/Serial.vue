@@ -78,6 +78,7 @@ const Convert = require("ansi-to-html");
 const convert = new Convert();
 import { SerialPort } from "serialport";
 import { ReadlineParser } from "@serialport/parser-readline";
+import { ByteLengthParser } from "@serialport/parser-byte-length";
 // import * as monaco from "monaco-editor";
 // import loader from "@monaco-editor/loader";
 import * as monaco from "monaco-editor";
@@ -170,7 +171,6 @@ export default {
   },
   methods: {
     ddddd() {
-      console.info("asdasd");
       this.monacoEditor.revealLine(this.monacoEditor.getModel().getLineCount());
     },
     baudRateSelectChange(value) {
@@ -197,6 +197,9 @@ export default {
         const parser = this.serial.serial1.pipe(
           new ReadlineParser({ delimiter: "\r\n" })
         );
+        // const parser = this.serial.serial1.pipe(
+        //   new ByteLengthParser({ length: 8 })
+        // );
         parser.on("data", (data) => {
           console.info(data);
 
@@ -270,11 +273,9 @@ export default {
     monaco.languages.setMonarchTokensProvider("mySpecialLanguage", {
       tokenizer: {
         root: [
-          [/\[error.*/, "custom-error"],
-          [/\[notice.*/, "custom-notice"],
-          [/\[info.*/, "custom-info"],
-          [/\[[a-zA-Z 0-9:]+\]/, "custom-date"],
-          [/\[0;32mI (.*?)\[0m/, "custom-aaa"],
+          [/\[0;31mI (.*?)\[0m/, "custom-31"],
+          [/\[0;32mI (.*?)\[0m/, "custom-32"],
+          [/\[0;37mI (.*?)\[0m/, "custom-37"],
         ],
       },
     });
@@ -284,11 +285,9 @@ export default {
       base: "vs",
       inherit: false,
       rules: [
-        { token: "custom-info", foreground: "808080" },
-        { token: "custom-error", foreground: "ff0000", fontStyle: "bold" },
-        { token: "custom-notice", foreground: "FFA500" },
-        { token: "custom-date", foreground: "008800" },
-        { token: "custom-aaa", foreground: "9932CC" },
+        { token: "custom-31", foreground: "FF0000" },
+        { token: "custom-32", foreground: "008000" },
+        { token: "custom-37", foreground: "FFFFFF" },
       ],
       colors: {
         "editor.foreground": "#000000",
@@ -331,14 +330,42 @@ export default {
     });
 
     this.monacoEditor = monaco.editor.create(this.$refs.editorContainer, {
-      value: getCode(),
+      value: "",
       // readOnly: true, //只读
       language: "java",
       //   theme: "vs-dark",
       theme: "myCoolTheme",
       language: "mySpecialLanguage",
     });
-
+    this.monacoEditor.addAction({
+      id: "menuClear",
+      label: "清空",
+      precondition: null,
+      contextMenuGroupId: "navigation",
+      run: (editor, args) => {
+        this.monacoEditor.setValue("");
+      },
+    });
+    this.monacoEditor.addAction({
+      id: "resetMenu",
+      label: "重启",
+      precondition: null,
+      contextMenuGroupId: "navigation",
+      run: (editor, args) => {
+        this.serial.serial1.port.set({ dtr: true, rts: true });
+        this.serial.serial1.port.set({ dtr: false, rts: true });
+        this.serial.serial1.port.set({ dtr: true, rts: true });
+      },
+    });
+    this.monacoEditor.addAction({
+      id: "hexMenu",
+      label: "十六进制显示",
+      precondition: null,
+      contextMenuGroupId: "navigation",
+      run: (editor, args) => {
+      
+      },
+    });
     // this.monacoEditor.setValue("aaaaaaa");
   },
 };
