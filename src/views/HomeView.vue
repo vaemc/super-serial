@@ -1,32 +1,4 @@
-<!-- <template>
-  <div>
-    <a-tabs default-active-key="1" type="editable-card">
-      <a-tab-pane key="1" tab="串口1">
-        <Serial />
-      </a-tab-pane>
-    </a-tabs>
-  </div>
-</template>
 
-<script>
-
-import Serial from "../components/Serial.vue";
-export default {
-  components: { Serial },
-  name: "HomeView",
-  data() {
-    return {
-     
-    };
-  },
-  methods: {
-  
-  },
-  mounted() {
-  
-  },
-};
-</script> -->
 
 
 <template>
@@ -37,7 +9,7 @@ export default {
   </a-tabs>
 </template>
 <script>
-import Serial from "../components/Serial.vue";
+import Serial from "../components/XtermSerial.vue";
 export default {
   components: { Serial },
   data() {
