@@ -41,17 +41,24 @@
           <div style="margin: 10px">
             <a-textarea
               placeholder="请输入内容"
+              v-model="sendContent"
               :auto-size="{ minRows: 4, maxRows: 4 }"
               allow-clear
               :disabled="!serialPortOpenBtnIsOpen"
             />
-            <a-checkbox> 16进制发送 </a-checkbox>
-            <a-button type="primary" :disabled="!serialPortOpenBtnIsOpen">
+            
+            <a-checkbox v-model="isSendNewLine">发送新行</a-checkbox>
+            <a-checkbox>16进制发送</a-checkbox>
+            <a-button
+              type="primary"
+              @click="sendBtn"
+              :disabled="!serialPortOpenBtnIsOpen"
+            >
               发送
             </a-button>
             <a-button
               type="primary"
-              @click="rest"
+              @click="restBtn"
               :disabled="!serialPortOpenBtnIsOpen"
             >
               重启
@@ -87,7 +94,7 @@ export default {
           span: ["style"],
         },
       },
-      logHtml: "",
+      isSendNewLine:false,
       serialPortListSelectValue: "",
       serialPortOpenBtnText: "打开端口",
       serialPortOpenBtnType: "primary",
@@ -98,10 +105,15 @@ export default {
         baudRate: "115200",
         port: {},
       },
+      sendContent: "",
     };
   },
   methods: {
-    rest() {
+    sendBtn() {
+      console.info(this.sendContent);
+      this.serial.port.write(this.sendContent + (this.isSendNewLine?"\r\n":""));
+    },
+    restBtn() {
       this.serial.port.port.set({ dtr: true, rts: true });
       this.serial.port.port.set({ dtr: false, rts: true });
       this.serial.port.port.set({ dtr: true, rts: true });
@@ -134,11 +146,11 @@ export default {
         });
 
         this.serial.port.on("error", (err) => {
-          console.info("error",err);
+          console.info("error", err);
         });
 
         this.serial.port.on("close", () => {
-          this.serial.port=null;
+          this.serial.port = null;
           this.serialPortOpenBtnIsOpen = false;
           this.serialPortOpenBtnText = "打开端口";
           this.serialPortOpenBtnType = "primary";
@@ -148,16 +160,10 @@ export default {
           const parser = this.serial.port.pipe(
             new ReadlineParser({ delimiter: "\r\n" })
           );
-
           parser.on("data", (data) => {
             //console.info(data);
             this.terminal.write(data + "\r\n");
           });
-
-          this.serial.port.on("open", () => {
-            console.log(this.serial.port.isOpen);
-          });
-
           this.serialPortOpenBtnText = "关闭端口";
           this.serialPortOpenBtnType = "danger";
           this.serialPortOpenBtnIsOpen = true;
