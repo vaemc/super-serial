@@ -43,10 +43,19 @@
               placeholder="请输入内容"
               :auto-size="{ minRows: 4, maxRows: 4 }"
               allow-clear
+              :disabled="!serialPortOpenBtnIsOpen"
             />
             <a-checkbox> 16进制发送 </a-checkbox>
-            <a-button type="primary" @click="ddddd"> 发送 </a-button>
-            <a-button type="primary" @click="rest"> 重启 </a-button>
+            <a-button type="primary" :disabled="!serialPortOpenBtnIsOpen">
+              发送
+            </a-button>
+            <a-button
+              type="primary"
+              @click="rest"
+              :disabled="!serialPortOpenBtnIsOpen"
+            >
+              重启
+            </a-button>
           </div>
         </a-form>
       </a-col>
@@ -87,18 +96,15 @@ export default {
       serial: {
         portList: [],
         baudRate: "115200",
-        serial1: {},
+        port: {},
       },
     };
   },
   methods: {
     rest() {
-      this.serial.serial1.port.set({ dtr: true, rts: true });
-      this.serial.serial1.port.set({ dtr: false, rts: true });
-      this.serial.serial1.port.set({ dtr: true, rts: true });
-    },
-    ddddd() {
-      this.monacoEditor.revealLine(this.monacoEditor.getModel().getLineCount());
+      this.serial.port.port.set({ dtr: true, rts: true });
+      this.serial.port.port.set({ dtr: false, rts: true });
+      this.serial.port.port.set({ dtr: true, rts: true });
     },
     baudRateSelectChange(value) {
       console.info(value);
@@ -119,28 +125,50 @@ export default {
         this.serialPortOpenBtnText = "打开端口";
         this.serialPortOpenBtnType = "primary";
 
-        this.serial.serial1.port.close();
-      }else if(!this.serialPortOpenBtnIsOpen) {
-        this.serial.serial1 = new SerialPort({
+        this.serial.port.port.close();
+      } else if (!this.serialPortOpenBtnIsOpen) {
+        this.serial.port = new SerialPort({
           path: this.serialPortListSelectValue,
           baudRate: parseInt(this.serial.baudRate),
-        });
-        console.info(parseInt(this.serial.baudRate));
-        const parser = this.serial.serial1.pipe(
-          new ReadlineParser({ delimiter: "\r\n" })
-        );
-        // const parser = this.serial.serial1.pipe(
-        //   new ByteLengthParser({ length: 8 })
-        // );
-        parser.on("data", (data) => {
-          console.info(data);
-
-          this.terminal.write(data + "\r\n");
+          autoOpen: false,
         });
 
-        this.serialPortOpenBtnText = "关闭端口";
-        this.serialPortOpenBtnType = "danger";
-        this.serialPortOpenBtnIsOpen = true;
+        this.serial.port.on("error", (err) => {
+          console.info("error",err);
+        });
+
+        this.serial.port.on("close", () => {
+          this.serial.port=null;
+          this.serialPortOpenBtnIsOpen = false;
+          this.serialPortOpenBtnText = "打开端口";
+          this.serialPortOpenBtnType = "primary";
+        });
+
+        this.serial.port.on("open", () => {
+          const parser = this.serial.port.pipe(
+            new ReadlineParser({ delimiter: "\r\n" })
+          );
+
+          parser.on("data", (data) => {
+            //console.info(data);
+            this.terminal.write(data + "\r\n");
+          });
+
+          this.serial.port.on("open", () => {
+            console.log(this.serial.port.isOpen);
+          });
+
+          this.serialPortOpenBtnText = "关闭端口";
+          this.serialPortOpenBtnType = "danger";
+          this.serialPortOpenBtnIsOpen = true;
+        });
+
+        this.serial.port.open((error) => {
+          if (error) {
+            this.$message.error("端口无法打开，请查看端口是否被占用！");
+            return;
+          }
+        });
       }
     },
     serialPortListSelectFocus() {

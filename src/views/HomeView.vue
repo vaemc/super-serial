@@ -1,10 +1,12 @@
-
-
-
 <template>
   <a-tabs v-model="activeKey" type="editable-card" @edit="onEdit">
-    <a-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title" :closable="pane.closable">
-      <Serial/>
+    <a-tab-pane
+      v-for="pane in panes"
+      :key="pane.key"
+      :tab="pane.title"
+      :closable="pane.closable"
+    >
+      <Serial />
     </a-tab-pane>
   </a-tabs>
 </template>
@@ -14,10 +16,7 @@ import Serial from "../components/XtermSerial.vue";
 export default {
   components: { Serial },
   data() {
-    const panes = [
-      { title: '串口1',  key: '1', closable: false },
-     
-    ];
+    const panes = [{ title: "串口1", key: "1", closable: false }];
     return {
       activeKey: panes[0].key,
       panes,
@@ -34,11 +33,12 @@ export default {
     add() {
       const panes = this.panes;
       const activeKey = `串口${this.newTabIndex++}`;
-      panes.push({ title: activeKey,  key: activeKey });
+      panes.push({ title: activeKey, key: activeKey });
       this.panes = panes;
       this.activeKey = activeKey;
     },
     remove(targetKey) {
+      this.newTabIndex--;
       let activeKey = this.activeKey;
       let lastIndex;
       this.panes.forEach((pane, i) => {
@@ -46,7 +46,7 @@ export default {
           lastIndex = i - 1;
         }
       });
-      const panes = this.panes.filter(pane => pane.key !== targetKey);
+      const panes = this.panes.filter((pane) => pane.key !== targetKey);
       if (panes.length && activeKey === targetKey) {
         if (lastIndex >= 0) {
           activeKey = panes[lastIndex].key;

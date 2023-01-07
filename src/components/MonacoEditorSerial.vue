@@ -203,7 +203,7 @@ export default {
         parser.on("data", (data) => {
           console.info(data);
 
-        //  this.logHtml += convert.toHtml(data) + "\r\n";
+          //this.logHtml += convert.toHtml(data) + "\r\n";
 
           this.monacoEditor.getModel().applyEdits(
             [
