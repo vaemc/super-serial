@@ -34,11 +34,8 @@
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
-            <a-button
-              :type="serialPortOperationBtnType"
-              @click="serialPortOperationBtn"
-            >
-              {{ serialPortOperationBtnText }}
+            <a-button :type="serialPortOpenBtnType" @click="serialPortOpenBtn">
+              {{ serialPortOpenBtnText }}
             </a-button>
           </a-form-item>
           <div style="margin: 10px">
@@ -83,8 +80,9 @@ export default {
       },
       logHtml: "",
       serialPortListSelectValue: "",
-      serialPortOperationBtnText: "打开端口",
-      serialPortOperationBtnType: "primary",
+      serialPortOpenBtnText: "打开端口",
+      serialPortOpenBtnType: "primary",
+      serialPortOpenBtnIsOpen: false,
       monacoEditor: {},
       serial: {
         portList: [],
@@ -111,13 +109,18 @@ export default {
       this.serialPortListSelectValue = value;
       this.serialPortListSelectValueInfo = value;
     },
-    serialPortOperationBtn() {
+    serialPortOpenBtn() {
       if (this.serialPortListSelectValue === "") {
         this.$message.warn("请选择端口");
         return;
       }
+      if (this.serialPortOpenBtnIsOpen) {
+        this.serialPortOpenBtnIsOpen = false;
+        this.serialPortOpenBtnText = "打开端口";
+        this.serialPortOpenBtnType = "primary";
 
-      if (this.serialPortOperationBtnText == "打开端口") {
+        this.serial.serial1.port.close();
+      }else if(!this.serialPortOpenBtnIsOpen) {
         this.serial.serial1 = new SerialPort({
           path: this.serialPortListSelectValue,
           baudRate: parseInt(this.serial.baudRate),
@@ -135,13 +138,9 @@ export default {
           this.terminal.write(data + "\r\n");
         });
 
-        this.serialPortOperationBtnText = "关闭端口";
-        this.serialPortOperationBtnType = "danger";
-      } else if (this.serialPortOperationBtnText == "关闭端口") {
-        this.serialPortOperationBtnText = "打开端口";
-        this.serialPortOperationBtnType = "primary";
-
-        this.serial.serial1.port.close();
+        this.serialPortOpenBtnText = "关闭端口";
+        this.serialPortOpenBtnType = "danger";
+        this.serialPortOpenBtnIsOpen = true;
       }
     },
     serialPortListSelectFocus() {
@@ -160,7 +159,7 @@ export default {
   mounted() {
     const terminal = new Terminal({
       fontSize: 14,
-      allowProposedApi: true
+      allowProposedApi: true,
     });
     const searchAddon = new SearchAddon();
     terminal.loadAddon(searchAddon);

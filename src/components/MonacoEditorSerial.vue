@@ -74,8 +74,8 @@
   </div>
 </template>
 <script>
-const Convert = require("ansi-to-html");
-const convert = new Convert();
+//const Convert = require("ansi-to-html");
+// const convert = new Convert();
 import { SerialPort } from "serialport";
 import { ReadlineParser } from "@serialport/parser-readline";
 import { ByteLengthParser } from "@serialport/parser-byte-length";
@@ -203,7 +203,7 @@ export default {
         parser.on("data", (data) => {
           console.info(data);
 
-          this.logHtml += convert.toHtml(data) + "\r\n";
+        //  this.logHtml += convert.toHtml(data) + "\r\n";
 
           this.monacoEditor.getModel().applyEdits(
             [
