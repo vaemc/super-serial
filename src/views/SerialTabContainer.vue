@@ -14,27 +14,31 @@
         :closable="pane.closable"
       >
         <span slot="tab" @click="editTabRemarkBtn(pane.key)">
-          <a-icon type="api" theme="twoTone" two-tone-color="gray" />
           <a-icon
-            v-if="false"
+            v-if="pane.connectState"
             type="thunderbolt"
             theme="twoTone"
             two-tone-color="#52c41a"
           />
+          <a-icon v-else type="api" theme="twoTone" two-tone-color="gray" />
           {{ pane.remark == null ? pane.title : pane.remark }}
         </span>
-        <Serial />
+        <XtermTerminal
+          :xtermTerminalName="pane.title"
+          @updateTabSerialPortConnectState="updateTabSerialPortConnectState"
+        />
       </a-tab-pane>
     </a-tabs>
   </div>
 </template>
 <script>
-//import Serial from "../components/MonacoEditorSerial.vue";
-import Serial from "../components/XtermTerminal.vue";
+import XtermTerminal from "../components/XtermTerminal.vue";
 export default {
-  components: { Serial },
+  components: { XtermTerminal },
   data() {
-    const panes = [{ title: "串口1", key: "串口1", closable: false }];
+    const panes = [
+      { title: "串口1", key: "串口1", connectState: false, closable: false },
+    ];
     return {
       editTabRemark: "",
       currentSelectTab: "",
@@ -46,6 +50,15 @@ export default {
   },
   mounted() {},
   methods: {
+    updateTabSerialPortConnectState(data) {
+      this.panes.forEach((ele) => {
+        if (ele.key === data.name) {
+          ele.connectState = data.state;
+        }
+      });
+
+
+    },
     editTabRemarkModalOk() {
       if (this.editTabRemark == "") {
         this.$message.warn("备注不能为空");
@@ -53,12 +66,11 @@ export default {
       }
       this.editTabRemarkModalVisible = false;
       this.panes.forEach((ele) => {
-        console.info(ele);
         if (ele.key === this.currentSelectTab) {
           ele.remark = this.editTabRemark;
         }
       });
-      this.editTabRemark == ""
+      this.editTabRemark = "";
     },
     editTabRemarkBtn(name) {
       if (this.activeKey == name) {
@@ -75,7 +87,7 @@ export default {
     add() {
       const panes = this.panes;
       const activeKey = `串口${this.newTabIndex++}`;
-      panes.push({ title: activeKey, key: activeKey });
+      panes.push({ title: activeKey, key: activeKey, connectState: false });
       this.panes = panes;
       this.activeKey = activeKey;
     },

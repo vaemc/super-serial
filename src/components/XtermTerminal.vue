@@ -2,7 +2,7 @@
   <div>
     <a-row type="flex">
       <a-col :span="20">
-        <div :id="terminalId" style="height: 90vh" class="xterm"></div>
+        <div :id="terminalId" style="height: 93vh" class="xterm"></div>
       </a-col>
       <a-col :span="4">
         <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 12 }">
@@ -29,7 +29,11 @@
             </a-select>
           </a-form-item>
           <a-form-item label="波特率">
-            <a-select defaultValue="115200" @change="baudRateSelectChange" :disabled="serialPortOpenBtnIsOpen">
+            <a-select
+              defaultValue="115200"
+              @change="baudRateSelectChange"
+              :disabled="serialPortOpenBtnIsOpen"
+            >
               <a-select-option value="9600">9600</a-select-option>
               <a-select-option value="74880">74880</a-select-option>
               <a-select-option value="115200">115200</a-select-option>
@@ -50,29 +54,57 @@
               :disabled="!serialPortOpenBtnIsOpen"
             />
 
-            <a-checkbox v-model="isSendNewLine">发送新行</a-checkbox>
-            <a-checkbox>16进制发送</a-checkbox>
-            <a-button
-              type="primary"
-              @click="sendBtn"
-              :disabled="!serialPortOpenBtnIsOpen"
-            >
-              发送
-            </a-button>
-            <a-button
-              type="primary"
-              @click="restBtn"
-              :disabled="!serialPortOpenBtnIsOpen"
-            >
-              重启
-            </a-button>
-            <a-button
-              type="primary"
-              @click="clearTerminalBtn"
-              style="margin-top: 5px"
-            >
-              清空
-            </a-button>
+            <a-row style="margin-top: 5px">
+              <a-col :span="12">
+                <a-checkbox v-model="isSendNewLine">发送新行</a-checkbox></a-col
+              >
+              <a-col :span="12"> <a-checkbox>发送HEX</a-checkbox> </a-col>
+            </a-row>
+
+            <a-row style="margin-top: 5px">
+              <a-col :span="12">
+                <a-button
+                  type="primary"
+                  @click="sendBtn"
+                  :disabled="!serialPortOpenBtnIsOpen"
+                >
+                  发送
+                </a-button>
+              </a-col>
+
+              <a-col :span="12">
+                <a-button
+                  type="primary"
+                  @click="restBtn"
+                  :disabled="!serialPortOpenBtnIsOpen"
+                >
+                  重启
+                </a-button>
+              </a-col>
+            </a-row>
+
+            <a-row style="margin-top: 5px">
+              <a-col :span="12">
+                <a-button
+                  type="primary"
+                  @click="clearTerminalContentBtn"
+                  style="margin-top: 5px"
+                >
+                  清空
+                </a-button>
+              </a-col>
+
+              <a-col :span="12">
+                <a-button
+                  type="primary"
+                  @click="testBtn"
+                  style="margin-top: 5px"
+                >
+                  测试1
+                </a-button></a-col
+              >
+            </a-row>
+            
           </div>
         </a-form>
       </a-col>
@@ -100,7 +132,10 @@ import { LigaturesAddon } from "xterm-addon-ligatures";
 import { Unicode11Addon } from "xterm-addon-unicode11";
 
 export default {
-  // name: "XtermTerminal",
+  //  name: "XtermTerminal",
+  props: {
+    xtermTerminalName: String,
+  },
   data() {
     return {
       terminalId: "",
@@ -134,7 +169,8 @@ export default {
     }
   },
   methods: {
-    clearTerminalBtn() {
+    testBtn() {},
+    clearTerminalContentBtn() {
       this.terminal.clear();
     },
     sendBtn() {
@@ -167,6 +203,7 @@ export default {
         this.serialPortOpenBtnText = "打开端口";
         this.serialPortOpenBtnType = "primary";
         this.serial.port.port.close();
+         this.syncSerialPortConnectState();
       } else if (!this.serialPortOpenBtnIsOpen) {
         this.serial.port = new SerialPort({
           path: this.serialPortListSelectValue,
@@ -179,6 +216,7 @@ export default {
         });
 
         this.serial.port.on("close", () => {
+          this.syncSerialPortConnectState();
           this.serial.port = null;
           this.serialPortOpenBtnIsOpen = false;
           this.serialPortOpenBtnText = "打开端口";
@@ -186,13 +224,12 @@ export default {
         });
 
         this.serial.port.on("open", () => {
-          const parser = this.serial.port.pipe(
-            new ReadlineParser()
-          );
+          const parser = this.serial.port.pipe(new ReadlineParser());
           parser.on("data", (data) => {
             //console.info(data);
             this.terminal.write(data + "\r\n");
           });
+          this.syncSerialPortConnectState();
           this.serialPortOpenBtnText = "关闭端口";
           this.serialPortOpenBtnType = "danger";
           this.serialPortOpenBtnIsOpen = true;
@@ -200,7 +237,7 @@ export default {
 
         this.serial.port.open((error) => {
           if (error) {
-            this.$message.error("端口无法打开，请查看端口是否被占用！");
+            this.$message.error("端口无法打开，请检查端口是否被占用！");
             return;
           }
         });
@@ -221,6 +258,12 @@ export default {
           this.serialPortListSelectDefaultPath = list[0].value;
           this.serialPortListSelectValue = list[0].value;
         }
+      });
+    },
+    syncSerialPortConnectState() {
+      this.$emit("updateTabSerialPortConnectState", {
+        name: this.xtermTerminalName,
+        state: this.serial.port.isOpen,
       });
     },
     initTerminal() {
