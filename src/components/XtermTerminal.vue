@@ -117,8 +117,10 @@ export default {
     };
   },
   beforeDestroy() {
-    this.serial.port.port.close();
-    this.serial.port = null;
+    if (this.serial.port.isOpen != undefined && this.serial.port.isOpen !=false) {
+      this.serial.port.port.close();
+      this.serial.port = null;
+    }
   },
   methods: {
     tabDispose() {

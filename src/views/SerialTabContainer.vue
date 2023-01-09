@@ -3,9 +3,13 @@
     <a-tab-pane
       v-for="pane in panes"
       :key="pane.key"
-      :tab="pane.title"
       :closable="pane.closable"
     >
+      <span slot="tab">
+        <a-icon type="api" theme="twoTone" two-tone-color="gray"/>
+        <a-icon v-if="false" type="thunderbolt" theme="twoTone" two-tone-color="#52c41a" />
+        {{pane.title}}
+      </span>
       <Serial />
     </a-tab-pane>
   </a-tabs>
