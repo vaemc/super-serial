@@ -65,6 +65,13 @@
             >
               重启
             </a-button>
+            <a-button
+              type="primary"
+              @click="clearTerminalBtn"
+              style="margin-top: 5px"
+            >
+              清空
+            </a-button>
           </div>
         </a-form>
       </a-col>
@@ -117,14 +124,17 @@ export default {
     };
   },
   beforeDestroy() {
-    if (this.serial.port.isOpen != undefined && this.serial.port.isOpen !=false) {
+    if (
+      this.serial.port.isOpen != undefined &&
+      this.serial.port.isOpen != false
+    ) {
       this.serial.port.port.close();
       this.serial.port = null;
     }
   },
   methods: {
-    tabDispose() {
-      console.info("tabDispose");
+    clearTerminalBtn() {
+      this.terminal.clear();
     },
     sendBtn() {
       console.info(this.sendContent);

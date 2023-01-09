@@ -1,18 +1,32 @@
 <template>
-  <a-tabs v-model="activeKey" type="editable-card" @edit="onEdit">
-    <a-tab-pane
-      v-for="pane in panes"
-      :key="pane.key"
-      :closable="pane.closable"
+  <div>
+    <a-modal
+      v-model="editTabRemarkModalVisible"
+      title="串口备注"
+      @ok="editTabRemarkModalOk"
     >
-      <span slot="tab">
-        <a-icon type="api" theme="twoTone" two-tone-color="gray"/>
-        <a-icon v-if="false" type="thunderbolt" theme="twoTone" two-tone-color="#52c41a" />
-        {{pane.title}}
-      </span>
-      <Serial />
-    </a-tab-pane>
-  </a-tabs>
+      <a-input v-model="editTabRemark" placeholder="请输入串口备注名称" />
+    </a-modal>
+    <a-tabs v-model="activeKey" type="editable-card" @edit="onEdit">
+      <a-tab-pane
+        v-for="pane in panes"
+        :key="pane.key"
+        :closable="pane.closable"
+      >
+        <span slot="tab" @click="editTabRemarkBtn(pane.key)">
+          <a-icon type="api" theme="twoTone" two-tone-color="gray" />
+          <a-icon
+            v-if="false"
+            type="thunderbolt"
+            theme="twoTone"
+            two-tone-color="#52c41a"
+          />
+          {{ pane.remark == null ? pane.title : pane.remark }}
+        </span>
+        <Serial />
+      </a-tab-pane>
+    </a-tabs>
+  </div>
 </template>
 <script>
 //import Serial from "../components/MonacoEditorSerial.vue";
@@ -20,14 +34,38 @@ import Serial from "../components/XtermTerminal.vue";
 export default {
   components: { Serial },
   data() {
-    const panes = [{ title: "串口1", key: "1", closable: false }];
+    const panes = [{ title: "串口1", key: "串口1", closable: false }];
     return {
+      editTabRemark: "",
+      currentSelectTab: "",
+      editTabRemarkModalVisible: false,
       activeKey: panes[0].key,
       panes,
       newTabIndex: 2,
     };
   },
+  mounted() {},
   methods: {
+    editTabRemarkModalOk() {
+      if (this.editTabRemark == "") {
+        this.$message.warn("备注不能为空");
+        return;
+      }
+      this.editTabRemarkModalVisible = false;
+      this.panes.forEach((ele) => {
+        console.info(ele);
+        if (ele.key === this.currentSelectTab) {
+          ele.remark = this.editTabRemark;
+        }
+      });
+      this.editTabRemark == ""
+    },
+    editTabRemarkBtn(name) {
+      if (this.activeKey == name) {
+        this.editTabRemarkModalVisible = true;
+        this.currentSelectTab = name;
+      }
+    },
     callback(key) {
       console.log(key);
     },
