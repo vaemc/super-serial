@@ -38,7 +38,6 @@ export default {
       this.activeKey = activeKey;
     },
     remove(targetKey) {
-      this.newTabIndex--;
       let activeKey = this.activeKey;
       let lastIndex;
       this.panes.forEach((pane, i) => {

@@ -4,8 +4,13 @@ const { defineConfig } = require("@vue/cli-service");
 // })
 const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 module.exports = {
-  chainWebpack: function (config) {
-    config.plugin("monaco").use(new MonacoWebpackPlugin());
+  chainWebpack (config) {
+    // config.module
+    // .rule('node')
+    // .test(/\.node$/)
+    // .use('node-loader')
+    // .loader('node-loader')
+    // .end()
   },
   configureWebpack: {
     externals: {

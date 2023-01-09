@@ -2,12 +2,14 @@
   <div>
     <a-row type="flex">
       <a-col :span="20">
-        <div id="xterm" style="height: 90vh" class="xterm"></div>
+        <div :id="terminalId" style="height: 90vh" class="xterm"></div>
       </a-col>
       <a-col :span="4">
         <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 12 }">
           <a-form-item label="端口">
             <a-select
+              v-model="serialPortListSelectDefaultPath"
+              @dropdownVisibleChange="serialPortListSelectFocus"
               @focus="serialPortListSelectFocus"
               @change="serialPortListSelectChange"
             >
@@ -46,7 +48,7 @@
               allow-clear
               :disabled="!serialPortOpenBtnIsOpen"
             />
-            
+
             <a-checkbox v-model="isSendNewLine">发送新行</a-checkbox>
             <a-checkbox>16进制发送</a-checkbox>
             <a-button
@@ -70,6 +72,10 @@
   </div>
 </template>
 <script>
+// const pty = require("node-pty");
+// const os = require("os");
+import { uid } from "uid";
+
 import { SerialPort } from "serialport";
 import { ReadlineParser } from "@serialport/parser-readline";
 import { ByteLengthParser } from "@serialport/parser-byte-length";
@@ -89,12 +95,14 @@ export default {
   name: "HomeView",
   data() {
     return {
+      terminalId: "",
       xssOptions: {
         whiteList: {
           span: ["style"],
         },
       },
-      isSendNewLine:false,
+      isSendNewLine: false,
+      serialPortListSelectDefaultPath: "",
       serialPortListSelectValue: "",
       serialPortOpenBtnText: "打开端口",
       serialPortOpenBtnType: "primary",
@@ -105,13 +113,15 @@ export default {
         baudRate: "115200",
         port: {},
       },
-      sendContent: "",
+      sendContent: "AT+GMR",
     };
   },
   methods: {
     sendBtn() {
       console.info(this.sendContent);
-      this.serial.port.write(this.sendContent + (this.isSendNewLine?"\r\n":""));
+      this.serial.port.write(
+        this.sendContent + (this.isSendNewLine ? "\r\n" : "")
+      );
     },
     restBtn() {
       this.serial.port.port.set({ dtr: true, rts: true });
@@ -180,42 +190,104 @@ export default {
     serialPortListSelectFocus() {
       this.getSerialPortList();
     },
-    getSerialPortList() {
+    getSerialPortList(isShowDefaultPath = false) {
       SerialPort.list().then((ports) => {
         let list = ports.map((item) => {
           console.info(item);
           return { value: item.path, label: item.friendlyName };
         });
         this.serial.portList = list;
+
+        if (list.length > 0 && isShowDefaultPath) {
+          this.serialPortListSelectDefaultPath = list[0].value;
+          this.serialPortListSelectValue = list[0].value;
+        }
       });
     },
+    initTerminal() {
+      this.getSerialPortList(true);
+
+      //const shell = os.platform() === "win32" ? "powershell.exe" : "bash";
+      // const ptyProcess = pty.spawn(shell, [], {
+      //   name: "xterm-color",
+      //   cols: 80,
+      //   rows: 30,
+      //   cwd: process.cwd(),
+      //   env: process.env,
+      // });
+
+      const terminal = new Terminal({
+        rendererType: "canvas",
+        fontSize: 14,
+        allowProposedApi: true,
+        disableStdin: false,
+        cursorStyle: "underline",
+        cursorBlink: true,
+        theme: {
+          cursor: "help",
+        },
+      });
+      const searchAddon = new SearchAddon();
+      terminal.loadAddon(searchAddon);
+      searchAddon.findNext("foo");
+
+      const fitAddon = new FitAddon();
+      terminal.loadAddon(fitAddon);
+
+      terminal.loadAddon(new WebLinksAddon());
+
+      terminal.loadAddon(new Unicode11Addon());
+      terminal.unicode.activeVersion = "11";
+      console.info("getElementById");
+      terminal.open(document.getElementById(this.terminalId));
+      terminal.loadAddon(new WebglAddon());
+      terminal.loadAddon(new CanvasAddon());
+      terminal.loadAddon(new LigaturesAddon());
+      fitAddon.fit();
+      terminal.focus();
+
+      // terminal.onData((key) => {
+      //   //console.info("key:", val);
+      //   //terminal.write(val);
+      //   //  ptyProcess.write(data);
+
+      //   if (key.length > 1) terminal.write(key);
+      // });
+
+      // terminal.onKey((e) => {
+      //   console.info(e);
+
+      //   const printable =
+      //     !e.domEvent.altKey &&
+      //     !e.domEvent.altGraphKey &&
+      //     !e.domEvent.ctrlKey &&
+      //     !e.domEvent.metaKey;
+      //   if (e.domEvent.code === "Enter") {
+      //     console.info("回车");
+      //   } else if (e.domEvent.code === "Backspace") {
+      //     terminal.write("\b \b");
+      //   } else if (printable) {
+      //     terminal.write(e.key);
+      //   }
+      // });
+
+      // terminal.onLineFeed(() => {
+      //   console.info("回车");
+      // });
+
+      this.terminal = terminal;
+
+      // terminal.writeln("Welcome to super serial");
+      // terminal.prompt();
+
+      //this.terminal.write('这是一个网址 https://www.baidu.com/')
+    },
+  },
+  beforeMount() {
+    this.terminalId = uid();
   },
   mounted() {
-    const terminal = new Terminal({
-      fontSize: 14,
-      allowProposedApi: true,
-    });
-    const searchAddon = new SearchAddon();
-    terminal.loadAddon(searchAddon);
-    searchAddon.findNext("foo");
-
-    const fitAddon = new FitAddon();
-    terminal.loadAddon(fitAddon);
-
-    terminal.loadAddon(new WebLinksAddon());
-
-    terminal.loadAddon(new Unicode11Addon());
-    terminal.unicode.activeVersion = "11";
-
-    terminal.open(document.getElementById("xterm"));
-    terminal.loadAddon(new WebglAddon());
-    terminal.loadAddon(new CanvasAddon());
-    terminal.loadAddon(new LigaturesAddon());
-    fitAddon.fit();
-    terminal.focus();
-    this.terminal = terminal;
-
-    // this.terminal.write('这是一个网址 https://www.baidu.com/')
+    this.initTerminal();
   },
 };
 </script>
