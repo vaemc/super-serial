@@ -12,6 +12,7 @@
               @dropdownVisibleChange="serialPortListSelectFocus"
               @focus="serialPortListSelectFocus"
               @change="serialPortListSelectChange"
+              :disabled="serialPortOpenBtnIsOpen"
             >
               <a-select-option
                 v-for="item in serial.portList"
@@ -28,7 +29,7 @@
             </a-select>
           </a-form-item>
           <a-form-item label="波特率">
-            <a-select defaultValue="115200" @change="baudRateSelectChange">
+            <a-select defaultValue="115200" @change="baudRateSelectChange" :disabled="serialPortOpenBtnIsOpen">
               <a-select-option value="9600">9600</a-select-option>
               <a-select-option value="74880">74880</a-select-option>
               <a-select-option value="115200">115200</a-select-option>
