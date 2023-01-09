@@ -12,7 +12,7 @@
 </template>
 <script>
 //import Serial from "../components/MonacoEditorSerial.vue";
-import Serial from "../components/XtermSerial.vue";
+import Serial from "../components/XtermTerminal.vue";
 export default {
   components: { Serial },
   data() {

@@ -92,7 +92,7 @@ import { LigaturesAddon } from "xterm-addon-ligatures";
 import { Unicode11Addon } from "xterm-addon-unicode11";
 
 export default {
-  name: "HomeView",
+  // name: "XtermTerminal",
   data() {
     return {
       terminalId: "",
@@ -116,7 +116,14 @@ export default {
       sendContent: "AT+GMR",
     };
   },
+  beforeDestroy() {
+    this.serial.port.port.close();
+    this.serial.port = null;
+  },
   methods: {
+    tabDispose() {
+      console.info("tabDispose");
+    },
     sendBtn() {
       console.info(this.sendContent);
       this.serial.port.write(
@@ -146,7 +153,6 @@ export default {
         this.serialPortOpenBtnIsOpen = false;
         this.serialPortOpenBtnText = "打开端口";
         this.serialPortOpenBtnType = "primary";
-
         this.serial.port.port.close();
       } else if (!this.serialPortOpenBtnIsOpen) {
         this.serial.port = new SerialPort({
@@ -238,7 +244,6 @@ export default {
 
       terminal.loadAddon(new Unicode11Addon());
       terminal.unicode.activeVersion = "11";
-      console.info("getElementById");
       terminal.open(document.getElementById(this.terminalId));
       terminal.loadAddon(new WebglAddon());
       terminal.loadAddon(new CanvasAddon());
@@ -246,13 +251,9 @@ export default {
       fitAddon.fit();
       terminal.focus();
 
-      // terminal.onData((key) => {
-      //   //console.info("key:", val);
-      //   //terminal.write(val);
-      //   //  ptyProcess.write(data);
-
-      //   if (key.length > 1) terminal.write(key);
-      // });
+      terminal.onData((key) => {
+        terminal.write(key);
+      });
 
       // terminal.onKey((e) => {
       //   console.info(e);
