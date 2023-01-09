@@ -187,7 +187,7 @@ export default {
 
         this.serial.port.on("open", () => {
           const parser = this.serial.port.pipe(
-            new ReadlineParser({ delimiter: "\r\n" })
+            new ReadlineParser()
           );
           parser.on("data", (data) => {
             //console.info(data);
