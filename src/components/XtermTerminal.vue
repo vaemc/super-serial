@@ -104,7 +104,6 @@
                 </a-button></a-col
               >
             </a-row>
-            
           </div>
         </a-form>
       </a-col>
@@ -199,11 +198,8 @@ export default {
         return;
       }
       if (this.serialPortOpenBtnIsOpen) {
-        this.serialPortOpenBtnIsOpen = false;
-        this.serialPortOpenBtnText = "打开端口";
-        this.serialPortOpenBtnType = "primary";
         this.serial.port.port.close();
-         this.syncSerialPortConnectState();
+        this.syncSerialPortConnectState();
       } else if (!this.serialPortOpenBtnIsOpen) {
         this.serial.port = new SerialPort({
           path: this.serialPortListSelectValue,
@@ -218,9 +214,7 @@ export default {
         this.serial.port.on("close", () => {
           this.syncSerialPortConnectState();
           this.serial.port = null;
-          this.serialPortOpenBtnIsOpen = false;
-          this.serialPortOpenBtnText = "打开端口";
-          this.serialPortOpenBtnType = "primary";
+          //this.getSerialPortList(true);
         });
 
         this.serial.port.on("open", () => {
@@ -230,9 +224,6 @@ export default {
             this.terminal.write(data + "\r\n");
           });
           this.syncSerialPortConnectState();
-          this.serialPortOpenBtnText = "关闭端口";
-          this.serialPortOpenBtnType = "danger";
-          this.serialPortOpenBtnIsOpen = true;
         });
 
         this.serial.port.open((error) => {
@@ -261,10 +252,14 @@ export default {
       });
     },
     syncSerialPortConnectState() {
+      let isOpen = this.serial.port.isOpen;
       this.$emit("updateTabSerialPortConnectState", {
         name: this.xtermTerminalName,
-        state: this.serial.port.isOpen,
+        state: isOpen,
       });
+      this.serialPortOpenBtnText = isOpen ? "关闭端口" : "打开端口";
+      this.serialPortOpenBtnType = isOpen ? "danger" : "primary";
+      this.serialPortOpenBtnIsOpen = isOpen;
     },
     initTerminal() {
       this.getSerialPortList(true);
