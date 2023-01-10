@@ -5,7 +5,22 @@
       title="串口备注"
       @ok="editTabRemarkModalOk"
     >
-      <a-input v-model="editTabRemark" placeholder="请输入串口备注名称" />
+      <a-input
+        v-model="editTabRemark"
+        placeholder="请输入串口备注名称"
+        allow-clear
+      />
+
+      <div style="margin-top: 10px">
+        <span>常用标签:&emsp;</span>
+        <a-tag
+          style="margin-top: 5px"
+          v-for="item in generalRemarkTagList"
+          @click="generalRemarkTagClick(item.text)"
+          :key="item.text"
+          >{{ item.text }}</a-tag
+        >
+      </div>
     </a-modal>
     <a-tabs v-model="activeKey" type="editable-card" @edit="onEdit">
       <a-tab-pane
@@ -40,6 +55,36 @@ export default {
       { title: "串口1", key: "串口1", connectState: false, closable: false },
     ];
     return {
+      generalRemarkTagList: [
+        {
+          color: "#2db7f5",
+          text: "ESP8266",
+        },
+        {
+          color: "#f50",
+          text: "ESP32",
+        },
+        {
+          color: "#87d068",
+          text: "C2",
+        },
+        {
+          color: "#108ee9",
+          text: "C3",
+        },
+        {
+          color: "#108ee9",
+          text: "C6",
+        },
+        {
+          color: "#108ee9",
+          text: "S2",
+        },
+        {
+          color: "#108ee9",
+          text: "S3",
+        },
+      ],
       editTabRemark: "",
       currentSelectTab: "",
       editTabRemarkModalVisible: false,
@@ -50,14 +95,15 @@ export default {
   },
   mounted() {},
   methods: {
+    generalRemarkTagClick(text) {
+      this.editTabRemark += text;
+    },
     updateTabSerialPortConnectState(data) {
       this.panes.forEach((ele) => {
         if (ele.key === data.name) {
           ele.connectState = data.state;
         }
       });
-
-
     },
     editTabRemarkModalOk() {
       if (this.editTabRemark == "") {
