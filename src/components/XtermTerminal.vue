@@ -168,7 +168,12 @@ export default {
     }
   },
   methods: {
-    testBtn() {},
+    testBtn() {
+      new Function("text", "terminal", "terminal.write(text);")(
+        "Hello",
+        this.terminal
+      );
+    },
     clearTerminalContentBtn() {
       this.terminal.clear();
     },
@@ -282,6 +287,7 @@ export default {
         cursorBlink: true,
         theme: {
           cursor: "help",
+          magenta: "#e39ef7",
         },
       });
       const searchAddon = new SearchAddon();
