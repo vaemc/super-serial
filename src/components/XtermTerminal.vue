@@ -1,111 +1,159 @@
 <template>
   <div>
+    <a-modal
+      @cancel="plotterVisible = false"
+      title="Title"
+      :visible="plotterVisible"
+    >
+      <a-button @click="aaa" type="primary">aaa</a-button>
+      <div style="width: 400px;height: 300px;" id="plotterChart"></div>
+    </a-modal>
+
     <a-row type="flex">
       <a-col :span="20">
-        <div :id="terminalId" style="height: 93vh" class="xterm"></div>
+        <div
+          :id="terminalId"
+          style="height: calc(100vh - 56px)"
+          class="xterm"
+        ></div>
       </a-col>
       <a-col :span="4">
-        <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 12 }">
-          <a-form-item label="端口">
-            <a-select
-              v-model="serialPortListSelectDefaultPath"
-              @dropdownVisibleChange="serialPortListSelectFocus"
-              @focus="serialPortListSelectFocus"
-              @change="serialPortListSelectChange"
-              :disabled="serialPortOpenBtnIsOpen"
-            >
-              <a-select-option
-                v-for="item in serial.portList"
-                :key="item.value"
-                :value="item.value"
+        <div style="height: calc(100vh - 56px)">
+          <a-form :label-col="{ span: 8 }" :wrapper-col="{ span: 12 }">
+            <a-form-item label="端口">
+              <a-select
+                v-model="serialPortListSelectDefaultPath"
+                @dropdownVisibleChange="serialPortListSelectFocus"
+                @focus="serialPortListSelectFocus"
+                @change="serialPortListSelectChange"
+                :disabled="serialPortOpenBtnIsOpen"
               >
-                <a-tooltip placement="left">
-                  <template slot="title">
-                    {{ item.label }}
-                  </template>
-                  {{ item.value }}
-                </a-tooltip>
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item label="波特率">
-            <a-select
-              defaultValue="115200"
-              @change="baudRateSelectChange"
-              :disabled="serialPortOpenBtnIsOpen"
-            >
-              <a-select-option value="9600">9600</a-select-option>
-              <a-select-option value="74880">74880</a-select-option>
-              <a-select-option value="115200">115200</a-select-option>
-            </a-select>
-          </a-form-item>
-
-          <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
-            <a-button :type="serialPortOpenBtnType" @click="serialPortOpenBtn">
-              {{ serialPortOpenBtnText }}
-            </a-button>
-          </a-form-item>
-          <div style="margin: 10px">
-            <a-textarea
-              placeholder="请输入内容"
-              v-model="sendContent"
-              :auto-size="{ minRows: 4, maxRows: 4 }"
-              allow-clear
-              :disabled="!serialPortOpenBtnIsOpen"
-            />
-
-            <a-row style="margin-top: 5px">
-              <a-col :span="12">
-                <a-checkbox v-model="isSendNewLine">发送新行</a-checkbox></a-col
+                <a-select-option
+                  v-for="item in serial.portList"
+                  :key="item.value"
+                  :value="item.value"
+                >
+                  <a-tooltip placement="left">
+                    <template slot="title">
+                      {{ item.label }}
+                    </template>
+                    {{ item.value }}
+                  </a-tooltip>
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item label="波特率">
+              <a-select
+                defaultValue="115200"
+                @change="baudRateSelectChange"
+                :disabled="serialPortOpenBtnIsOpen"
               >
-              <a-col :span="12"> <a-checkbox>发送HEX</a-checkbox> </a-col>
-            </a-row>
+                <a-select-option value="9600">9600</a-select-option>
+                <a-select-option value="74880">74880</a-select-option>
+                <a-select-option value="115200">115200</a-select-option>
+              </a-select>
+            </a-form-item>
 
-            <a-row style="margin-top: 5px">
-              <a-col :span="12">
-                <a-button
-                  type="primary"
-                  @click="sendBtn"
-                  :disabled="!serialPortOpenBtnIsOpen"
-                >
-                  发送
-                </a-button>
-              </a-col>
-
-              <a-col :span="12">
-                <a-button
-                  type="primary"
-                  @click="restBtn"
-                  :disabled="!serialPortOpenBtnIsOpen"
-                >
-                  重启
-                </a-button>
-              </a-col>
-            </a-row>
-
-            <a-row style="margin-top: 5px">
-              <a-col :span="12">
-                <a-button
-                  type="primary"
-                  @click="clearTerminalContentBtn"
-                  style="margin-top: 5px"
-                >
-                  清空
-                </a-button>
-              </a-col>
-
-              <a-col :span="12">
-                <a-button
-                  type="primary"
-                  @click="testBtn"
-                  style="margin-top: 5px"
-                >
-                  测试1
-                </a-button></a-col
+            <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
+              <a-button
+                :type="serialPortOpenBtnType"
+                @click="serialPortOpenBtn"
               >
-            </a-row>
-          </div>
-        </a-form>
+                {{ serialPortOpenBtnText }}
+              </a-button>
+            </a-form-item>
+            <div style="margin: 10px">
+              <a-textarea
+                placeholder="请输入内容"
+                v-model="sendContent"
+                :auto-size="{ minRows: 4, maxRows: 4 }"
+                allow-clear
+                :disabled="!serialPortOpenBtnIsOpen"
+              />
+
+              <a-row style="margin-top: 5px">
+                <a-col :span="12">
+                  <a-checkbox v-model="isSendNewLine"
+                    >发送新行</a-checkbox
+                  ></a-col
+                >
+                <a-col :span="12"> <a-checkbox>发送HEX</a-checkbox> </a-col>
+              </a-row>
+
+              <a-row style="margin-top: 5px">
+                <a-col :span="12">
+                  <a-button
+                    type="primary"
+                    @click="sendBtn"
+                    :disabled="!serialPortOpenBtnIsOpen"
+                  >
+                    发送
+                  </a-button>
+                </a-col>
+
+                <a-col :span="12">
+                  <a-button
+                    type="primary"
+                    @click="restBtn"
+                    :disabled="!serialPortOpenBtnIsOpen"
+                  >
+                    重启
+                  </a-button>
+                </a-col>
+              </a-row>
+
+              <a-row style="margin-top: 5px">
+                <a-col :span="12">
+                  <a-button
+                    type="primary"
+                    @click="clearTerminalContentBtn"
+                    style="margin-top: 5px"
+                  >
+                    清空
+                  </a-button>
+                </a-col>
+
+                <a-col :span="12">
+                  <a-button
+                    @click="openPlotterModal"
+                    style="margin-top: 5px"
+                    type="primary"
+                  >
+                    绘图
+                  </a-button></a-col
+                >
+              </a-row>
+
+              <a-row style="margin-top: 5px">
+                <a-col :span="12">
+                  <a-button
+                    type="primary"
+                    @click="testBtn"
+                    style="margin-top: 5px"
+                  >
+                    测试1
+                  </a-button>
+                </a-col>
+
+                <a-col :span="12"> </a-col>
+              </a-row>
+
+              <div
+                style="
+                  height: 200px;
+                  display: flex;
+                  align-content: flex-end;
+                  align-items: flex-end;
+                "
+              >
+                <div>
+                  <p>TX：{{ sendDataLength }}Bytes</p>
+                  <p>RX：{{ receiveDataLength }}Bytes</p>
+                </div>
+              </div>
+            </div>
+          </a-form>
+        </div>
       </a-col>
     </a-row>
   </div>
@@ -129,7 +177,6 @@ import { WebglAddon } from "xterm-addon-webgl";
 import { CanvasAddon } from "xterm-addon-canvas";
 import { LigaturesAddon } from "xterm-addon-ligatures";
 import { Unicode11Addon } from "xterm-addon-unicode11";
-
 export default {
   //  name: "XtermTerminal",
   props: {
@@ -137,12 +184,16 @@ export default {
   },
   data() {
     return {
+      plotterVisible: false,
+      receiveDataLength: 0,
+      sendDataLength: 0,
       terminalId: "",
       xssOptions: {
         whiteList: {
           span: ["style"],
         },
       },
+      historyInputData: ["AT+GMR", "AT+KKK"],
       isSendNewLine: false,
       serialPortListSelectDefaultPath: "",
       serialPortListSelectValue: "",
@@ -168,6 +219,35 @@ export default {
     }
   },
   methods: {
+    aaa() {
+      this.drawLine();
+    },
+    drawLine() {
+      var myChart = this.$echarts.init(document.getElementById('plotterChart'));
+      
+      var option = {
+        title: {
+          text: '串口绘图',
+        },
+        tooltip: {},
+        legend: {
+          data: ['销量']
+        },
+        xAxis: {
+          data: ['数据1','数据2','数据3','数据4','数据5','数据6']
+        },
+        yAxis: {},
+        series: [{
+          name: '数据a',
+          type: 'line',
+          data: [5,20,36,10,10,20]
+        }]
+      };
+      myChart.setOption(option);
+    },
+    openPlotterModal() {
+      this.plotterVisible = true;
+    },
     testBtn() {
       new Function("text", "terminal", "terminal.write(text);")(
         "Hello",
@@ -182,6 +262,8 @@ export default {
       this.serial.port.write(
         this.sendContent + (this.isSendNewLine ? "\r\n" : "")
       );
+
+      this.sendDataLength += this.sendContent.length;
     },
     restBtn() {
       this.serial.port.port.set({ dtr: true, rts: true });
@@ -226,7 +308,9 @@ export default {
           const parser = this.serial.port.pipe(new ReadlineParser());
           parser.on("data", (data) => {
             //console.info(data);
-            this.terminal.write(data + "\r\n");
+            this.terminal.writeln(data);
+
+            this.receiveDataLength += data.length;
           });
           this.syncSerialPortConnectState();
         });
@@ -262,6 +346,10 @@ export default {
         name: this.xtermTerminalName,
         state: isOpen,
       });
+      if (!isOpen) {
+        this.receiveDataLength = 0;
+        this.sendDataLength = 0;
+      }
       this.serialPortOpenBtnText = isOpen ? "关闭端口" : "打开端口";
       this.serialPortOpenBtnType = isOpen ? "danger" : "primary";
       this.serialPortOpenBtnIsOpen = isOpen;
