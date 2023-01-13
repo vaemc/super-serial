@@ -1,12 +1,15 @@
 <template>
   <div>
     <a-modal
-      @cancel="plotterVisible = false"
-      title="Title"
-      :visible="plotterVisible"
+      @cancel="plotterModalVisible = false"
+      title="串口绘图"
+      :visible="plotterModalVisible"
+      width="70vw"
+      okText="帮助"
+      cancelText="关闭"
+      @ok="plotterModalOkBtn"
     >
-      <a-button @click="aaa" type="primary">aaa</a-button>
-      <div style="width: 400px;height: 300px;" id="plotterChart"></div>
+      <Plotter />
     </a-modal>
 
     <a-row type="flex">
@@ -177,14 +180,18 @@ import { WebglAddon } from "xterm-addon-webgl";
 import { CanvasAddon } from "xterm-addon-canvas";
 import { LigaturesAddon } from "xterm-addon-ligatures";
 import { Unicode11Addon } from "xterm-addon-unicode11";
+
+import Plotter from "../components/Plotter.vue";
+
 export default {
   //  name: "XtermTerminal",
+  components: { Plotter },
   props: {
     xtermTerminalName: String,
   },
   data() {
     return {
-      plotterVisible: false,
+      plotterModalVisible: false,
       receiveDataLength: 0,
       sendDataLength: 0,
       terminalId: "",
@@ -219,34 +226,18 @@ export default {
     }
   },
   methods: {
-    aaa() {
-      this.drawLine();
+    plotterModalOkBtn() {
+      this.$notification.open({
+        message: "串口数据格式",
+        duration: 6,
+        description: `  Serial.println(sensorValue); \n
+  Serial.print(" ");`,
+        icon: <a-icon type="question-circle" style="color: #108ee9" />,
+      });
     },
-    drawLine() {
-      var myChart = this.$echarts.init(document.getElementById('plotterChart'));
-      
-      var option = {
-        title: {
-          text: '串口绘图',
-        },
-        tooltip: {},
-        legend: {
-          data: ['销量']
-        },
-        xAxis: {
-          data: ['数据1','数据2','数据3','数据4','数据5','数据6']
-        },
-        yAxis: {},
-        series: [{
-          name: '数据a',
-          type: 'line',
-          data: [5,20,36,10,10,20]
-        }]
-      };
-      myChart.setOption(option);
-    },
+    drawLine() {},
     openPlotterModal() {
-      this.plotterVisible = true;
+      this.plotterModalVisible = true;
     },
     testBtn() {
       new Function("text", "terminal", "terminal.write(text);")(
