@@ -168,12 +168,5 @@ export default {
   height: 100%;
 } */
 
-#app,
-.ant-tabs {
-  height: 100%;
-}
 
-.ant-tabs-content {
-  flex: 1;
-}
 </style>
