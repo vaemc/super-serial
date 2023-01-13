@@ -1,16 +1,21 @@
 <template>
   <div>
-    <div style="margin: 10px;">
-      <a-checkbox v-for="item in countries" :checked="true"> {{item}} </a-checkbox>
+    <div style="margin: 10px">
+      <a-checkbox v-for="item in countries" :checked="true">
+        {{ item }}
+      </a-checkbox>
     </div>
-    <div id="echarts1" style="height: 500px; width: 100%"></div>
+    <div :id="plotterId" style="height: 500px; width: 100%"></div>
   </div>
 </template>
 
 <script>
+import { uid } from "uid";
+
 export default {
   data() {
     return {
+      plotterId: "",
       countries: [
         "channel3",
         "channel2",
@@ -20,8 +25,11 @@ export default {
         "湿度",
         "adc1",
         "房间温度",
-      ]
+      ],
     };
+  },
+  beforeMount() {
+    this.plotterId = uid();
   },
   mounted() {
     //  this.run();
@@ -34,7 +42,7 @@ export default {
   },
   methods: {
     run(_rawData) {
-      var chartDom = document.getElementById("echarts1");
+      var chartDom = document.getElementById(this.plotterId);
       var myChart = this.$echarts.init(chartDom);
       var option;
 
