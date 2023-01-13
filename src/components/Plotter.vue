@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="margin: 10px">
-      <a-checkbox v-for="item in countries" :checked="true">
+      <a-checkbox v-for="item in countries" :key="item" :checked="true">
         {{ item }}
       </a-checkbox>
     </div>

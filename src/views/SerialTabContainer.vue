@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100%">
     <a-modal
       v-model="editTabRemarkModalVisible"
       title="串口备注"
@@ -39,6 +39,7 @@
           {{ pane.remark == null ? pane.title : pane.remark }}
         </span>
         <XtermTerminal
+          id="XtermTerminal"
           :xtermTerminalName="pane.title"
           @updateTabSerialPortConnectState="updateTabSerialPortConnectState"
         />
@@ -159,3 +160,20 @@ export default {
   },
 };
 </script>
+<style>
+/* #app,
+.ant-tabs,
+.ant-tabs-tabpane,
+.ant-tabs-content {
+  height: 100%;
+} */
+
+#app,
+.ant-tabs {
+  height: 100%;
+}
+
+.ant-tabs-content {
+  flex: 1;
+}
+</style>
