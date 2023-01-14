@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%">
+  <div>
     <a-modal
       v-model="editTabRemarkModalVisible"
       title="串口备注"

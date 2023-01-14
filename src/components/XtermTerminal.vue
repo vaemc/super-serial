@@ -11,18 +11,10 @@
     >
       <Plotter />
     </a-modal>
-    <div style="display: flex; flex-direction: row">
-      <div style="flex: auto; display: flex; flex-direction: column">
+    <div style="display: flex; ">
+      <div style="flex: 1">
         <div :id="terminalId" class="xterm"></div>
-        <div
-          style="
-            width: 100%;
-            padding-left: 10px;
-            background-color: #007acc;
-            display: flex;
-            align-items: center;
-          "
-        >
+        <div style="width: 100%; padding-left: 10px; background-color: #007acc">
           <span style="color: white; margin-right: 10px"
             >TX：{{ sendDataLength }}Bytes</span
           >
@@ -33,11 +25,11 @@
       </div>
       <div
         style="
-          width: 200px;
           padding-left: 10px;
           padding-right: 10px;
           display: flex;
           flex-direction: column;
+          width: 200px;
         "
       >
         <div style="display: flex; flex-direction: row; margin-bottom: 5px">
@@ -88,75 +80,61 @@
         >
           {{ serialPortOpenBtnText }}
         </a-button>
-        <div>
-          <a-textarea
-            placeholder="请输入内容"
-            v-model="sendContent"
-            :auto-size="{ minRows: 4, maxRows: 4 }"
-            allow-clear
+
+        <a-textarea
+          placeholder="请输入内容"
+          v-model="sendContent"
+          :auto-size="{ minRows: 4, maxRows: 4 }"
+          allow-clear
+          :disabled="!serialPortOpenBtnIsOpen"
+        />
+
+        <a-row style="margin-bottom: 5px">
+          <a-col :span="12" style="display: flex; flex-wrap: nowrap">
+            <a-checkbox v-model="isSendNewLine">发送新行</a-checkbox></a-col
+          >
+          <a-col :span="12"> <a-checkbox>发送HEX</a-checkbox> </a-col>
+        </a-row>
+        <div
+          style="display: flex; flex-wrap: wrap; justify-content: flex-start"
+        >
+          <a-button
+            type="primary"
+            @click="sendBtn"
             :disabled="!serialPortOpenBtnIsOpen"
-          />
-
-          <a-row style="margin-bottom: 5px">
-            <a-col :span="12" style="display: flex; flex-wrap: nowrap">
-              <a-checkbox v-model="isSendNewLine">发送新行</a-checkbox></a-col
-            >
-            <a-col :span="12"> <a-checkbox>发送HEX</a-checkbox> </a-col>
-          </a-row>
-
-          <a-row style="margin-bottom: 5px">
-            <a-col :span="12">
-              <a-button
-                type="primary"
-                @click="sendBtn"
-                :disabled="!serialPortOpenBtnIsOpen"
-              >
-                发送
-              </a-button>
-            </a-col>
-
-            <a-col :span="12">
-              <a-button
-                type="primary"
-                @click="restBtn"
-                :disabled="!serialPortOpenBtnIsOpen"
-              >
-                重启
-              </a-button>
-            </a-col>
-          </a-row>
-
-          <a-row style="margin-top: 5px">
-            <a-col :span="12">
-              <a-button
-                type="primary"
-                @click="clearTerminalContentBtn"
-                style="margin-top: 5px"
-              >
-                清空
-              </a-button>
-            </a-col>
-
-            <a-col :span="12">
-              <a-button
-                @click="openPlotterModal"
-                style="margin-top: 5px"
-                type="primary"
-              >
-                绘图
-              </a-button></a-col
-            >
-          </a-row>
-
-          <a-row style="margin-top: 5px">
-            <a-col :span="12">
-              <a-button type="primary" @click="testBtn" style="margin-top: 5px">
-                测试1
-              </a-button>
-            </a-col>
-
-            <a-col :span="12"> </a-col>
-          </a-row>
+            style="margin: 5px; flex: 1"
+          >
+            发送
+          </a-button>
+          <a-button
+            type="primary"
+            @click="restBtn"
+            :disabled="!serialPortOpenBtnIsOpen"
+            style="margin: 5px; flex: 1"
+          >
+            重启
+          </a-button>
+          <a-button
+            type="primary"
+            @click="clearTerminalContentBtn"
+            style="margin: 5px; flex: 1"
+          >
+            清空
+          </a-button>
+          <a-button
+            @click="openPlotterModal"
+            style="margin: 5px; flex: 1"
+            type="primary"
+          >
+            绘图
+          </a-button>
+          <a-button
+            type="primary"
+            @click="testBtn"
+            style="margin: 5px; flex: 1"
+          >
+            测试1
+          </a-button>
         </div>
       </div>
     </div>
@@ -351,7 +329,7 @@ export default {
     initTerminal() {
       this.getSerialPortList(true);
 
-      //const shell = os.platform() === "win32" ? "powershell.exe" : "bash";
+      // const shell = os.platform() === "win32" ? "powershell.exe" : "bash";
       // const ptyProcess = pty.spawn(shell, [], {
       //   name: "xterm-color",
       //   cols: 80,
@@ -394,7 +372,7 @@ export default {
       terminal.onData((key) => {
         terminal.write(key);
       });
-
+      this.terminal = terminal;
       // terminal.onKey((e) => {
       //   console.info(e);
 
@@ -415,8 +393,6 @@ export default {
       // terminal.onLineFeed(() => {
       //   console.info("回车");
       // });
-
-      this.terminal = terminal;
 
       // terminal.writeln("Welcome to super serial");
       // terminal.prompt();
