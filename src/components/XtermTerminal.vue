@@ -13,15 +13,15 @@
     </a-modal>
     <div style="display: flex; ">
       <div style="flex: 1">
-        <div :id="terminalId" class="xterm"></div>
-        <div style="width: 100%; padding-left: 10px; background-color: #007acc">
+        <div :id="terminalId" style="height: 93vh;"  class="xterm"></div>
+        <!-- <div style="width: 100%; padding-left: 10px; background-color: #007acc">
           <span style="color: white; margin-right: 10px"
             >TX：{{ sendDataLength }}Bytes</span
           >
           <span style="color: white; margin-right: 10px"
             >RX：{{ receiveDataLength }}Bytes</span
           >
-        </div>
+        </div> -->
       </div>
       <div
         style="
@@ -71,6 +71,7 @@
             <a-select-option value="9600">9600</a-select-option>
             <a-select-option value="74880">74880</a-select-option>
             <a-select-option value="115200">115200</a-select-option>
+            <a-select-option value="2000000">2000000</a-select-option>
           </a-select>
         </div>
         <a-button
