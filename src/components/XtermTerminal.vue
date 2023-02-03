@@ -1,83 +1,141 @@
 <template>
   <div>
-    <a-modal @cancel="plotterModalVisible = false" title="串口绘图" :visible="plotterModalVisible" width="70vw" okText="帮助"
-      cancelText="关闭" @ok="plotterModalOkBtn">
+    <a-modal
+      @cancel="plotterModalVisible = false"
+      title="串口绘图"
+      :visible="plotterModalVisible"
+      width="70vw"
+      okText="帮助"
+      cancelText="关闭"
+      @ok="plotterModalOkBtn"
+    >
       <Plotter />
     </a-modal>
-    <div style="display: flex; flex-flow: column;height: 100%;">
-      <div style="display: flex;  flex: 1 1 auto;">
-        <div style="flex: 1 1 auto">
-          <div :id="terminalId" style="height: 100%;" class="xterm"></div>
+    <div style="display: flex; ">
+      <div style="flex: 1">
+        <div :id="terminalId" class="xterm"></div>
+        <div style="width: 100%; padding-left: 10px; background-color: #007acc">
+          <span style="color: white; margin-right: 10px"
+            >TX：{{ sendDataLength }}Bytes</span
+          >
+          <span style="color: white; margin-right: 10px"
+            >RX：{{ receiveDataLength }}Bytes</span
+          >
         </div>
-        <div style="
+      </div>
+      <div
+        style="
           padding-left: 10px;
           padding-right: 10px;
           display: flex;
           flex-direction: column;
-          flex: 0 1 200px;
-        ">
-          <div style="display: flex; flex-direction: row; margin-bottom: 5px">
-            <div style="width: 60px; text-align: right; align-self: center;color: white;">
-              端口：
-            </div>
-            <a-select style="width: 100px" v-model="serialPortListSelectDefaultPath"
-              @dropdownVisibleChange="serialPortListSelectFocus" @focus="serialPortListSelectFocus"
-              @change="serialPortListSelectChange" :disabled="serialPortOpenBtnIsOpen">
-              <a-select-option v-for="item in serial.portList" :key="item.value" :value="item.value">
-                <a-tooltip placement="left">
-                  <template slot="title">
-                    {{ item.label }}
-                  </template>
-                  {{ item.value }}
-                </a-tooltip>
-              </a-select-option>
-            </a-select>
+          width: 200px;
+        "
+      >
+        <div style="display: flex; flex-direction: row; margin-bottom: 5px">
+          <div style="width: 60px; text-align: right; align-self: center">
+            端口：
           </div>
-          <div style="display: flex; flex-direction: row; margin-bottom: 5px">
-            <div style="width: 60px; text-align: right; align-self: center;color: white;">
-              波特率：
-            </div>
-            <a-select style="width: 100px" defaultValue="115200" @change="baudRateSelectChange"
-              :disabled="serialPortOpenBtnIsOpen">
-              <a-select-option value="9600">9600</a-select-option>
-              <a-select-option value="74880">74880</a-select-option>
-              <a-select-option value="115200">115200</a-select-option>
-            </a-select>
-          </div>
-          <a-button style="margin-bottom: 5px" :type="serialPortOpenBtnType" @click="serialPortOpenBtn">
-            {{ serialPortOpenBtnText }}
-          </a-button>
-
-          <a-textarea placeholder="请输入内容" v-model="sendContent" :auto-size="{ minRows: 4, maxRows: 4 }" allow-clear
-            :disabled="!serialPortOpenBtnIsOpen" />
-
-          <a-row style="margin-bottom: 5px">
-            <a-col :span="12" style="display: flex; flex-wrap: nowrap;">
-              <a-checkbox v-model="isSendNewLine" style="color: white;">发送新行</a-checkbox></a-col>
-            <a-col :span="12"> <a-checkbox style="color: white;">发送HEX</a-checkbox> </a-col>
-          </a-row>
-          <div style="display: flex; flex-wrap: wrap; justify-content: flex-start">
-            <a-button type="primary" @click="sendBtn" :disabled="!serialPortOpenBtnIsOpen" style="margin: 5px; flex: 1">
-              发送
-            </a-button>
-            <a-button type="primary" @click="restBtn" :disabled="!serialPortOpenBtnIsOpen" style="margin: 5px; flex: 1">
-              重启
-            </a-button>
-            <a-button type="primary" @click="clearTerminalContentBtn" style="margin: 5px; flex: 1">
-              清空
-            </a-button>
-            <a-button @click="openPlotterModal" style="margin: 5px; flex: 1" type="primary">
-              绘图
-            </a-button>
-            <a-button type="primary" @click="testBtn" style="margin: 5px; flex: 1">
-              测试1
-            </a-button>
-          </div>
+          <a-select
+            style="width: 100px"
+            v-model="serialPortListSelectDefaultPath"
+            @dropdownVisibleChange="serialPortListSelectFocus"
+            @focus="serialPortListSelectFocus"
+            @change="serialPortListSelectChange"
+            :disabled="serialPortOpenBtnIsOpen"
+          >
+            <a-select-option
+              v-for="item in serial.portList"
+              :key="item.value"
+              :value="item.value"
+            >
+              <a-tooltip placement="left">
+                <template slot="title">
+                  {{ item.label }}
+                </template>
+                {{ item.value }}
+              </a-tooltip>
+            </a-select-option>
+          </a-select>
         </div>
-      </div>
-      <div style="width: 100%; padding-left: 10px; background-color: #007acc;  flex: 0 1 auto;">
-        <span style="color: white; margin-right: 10px">TX：{{ sendDataLength }}Bytes</span>
-        <span style="color: white; margin-right: 10px">RX：{{ receiveDataLength }}Bytes</span>
+        <div style="display: flex; flex-direction: row; margin-bottom: 5px">
+          <div style="width: 60px; text-align: right; align-self: center">
+            波特率：
+          </div>
+          <a-select
+            style="width: 100px"
+            defaultValue="115200"
+            @change="baudRateSelectChange"
+            :disabled="serialPortOpenBtnIsOpen"
+          >
+            <a-select-option value="9600">9600</a-select-option>
+            <a-select-option value="74880">74880</a-select-option>
+            <a-select-option value="115200">115200</a-select-option>
+          </a-select>
+        </div>
+        <a-button
+          style="margin-bottom: 5px"
+          :type="serialPortOpenBtnType"
+          @click="serialPortOpenBtn"
+        >
+          {{ serialPortOpenBtnText }}
+        </a-button>
+
+        <a-textarea
+          placeholder="请输入内容"
+          v-model="sendContent"
+          :auto-size="{ minRows: 4, maxRows: 4 }"
+          allow-clear
+          :disabled="!serialPortOpenBtnIsOpen"
+        />
+
+        <a-row style="margin-bottom: 5px">
+          <a-col :span="12" style="display: flex; flex-wrap: nowrap">
+            <a-checkbox v-model="isSendNewLine">发送新行</a-checkbox></a-col
+          >
+          <a-col :span="12"> <a-checkbox>发送HEX</a-checkbox> </a-col>
+        </a-row>
+        <div
+          style="display: flex; flex-wrap: wrap; justify-content: flex-start"
+        >
+          <a-button
+            type="primary"
+            @click="sendBtn"
+            :disabled="!serialPortOpenBtnIsOpen"
+            style="margin: 5px; flex: 1"
+          >
+            发送
+          </a-button>
+          <a-button
+            type="primary"
+            @click="restBtn"
+            :disabled="!serialPortOpenBtnIsOpen"
+            style="margin: 5px; flex: 1"
+          >
+            重启
+          </a-button>
+          <a-button
+            type="primary"
+            @click="clearTerminalContentBtn"
+            style="margin: 5px; flex: 1"
+          >
+            清空
+          </a-button>
+          <a-button
+            @click="openPlotterModal"
+            style="margin: 5px; flex: 1"
+            type="primary"
+          >
+            绘图
+          </a-button>
+          <a-button
+            type="primary"
+            @click="testBtn"
+            style="margin: 5px; flex: 1"
+          >
+            测试1
+          </a-button>
+        </div>
       </div>
     </div>
   </div>
@@ -156,7 +214,7 @@ export default {
         icon: <a-icon type="question-circle" style="color: #108ee9" />,
       });
     },
-    drawLine() { },
+    drawLine() {},
     openPlotterModal() {
       this.plotterModalVisible = true;
     },
@@ -350,27 +408,3 @@ export default {
   },
 };
 </script>
-<style>
-.xterm .xterm-viewport {
-  /* On OS X this is required in order for the scroll bar to appear fully opaque */
-  background-color: transparent;
-  overflow-y: scroll;
-  cursor: default;
-  position: absolute;
-  right: 0;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  scrollbar-color: var(--highlight) var(--dark);
-  scrollbar-width: thin;
-}
-
-.xterm-viewport::-webkit-scrollbar {
-  background-color: var(--dark);
-  width: 5px;
-}
-
-.xterm-viewport::-webkit-scrollbar-thumb {
-  background: var(--highlight);
-}
-</style>

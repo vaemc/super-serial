@@ -1,20 +1,19 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import SerialTabContainer from '../views/SerialTabContainer.vue'
-import MainWindow from '../views/MainWindow.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'MainWindow',
-    component: MainWindow
+    name: 'SerialTabContainer',
+    component: SerialTabContainer
   }
 ]
 
 const router = new VueRouter({
-  mode: process.env.IS_ELECTRON ? 'hash' : 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 })

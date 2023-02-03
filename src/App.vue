@@ -1,6 +1,6 @@
-<!-- <template>
+<template>
   <a-config-provider :locale="locale">
-    <div style="height: 100%;" id="app">
+    <div id="app">
       <router-view />
     </div>
   </a-config-provider>
@@ -12,21 +12,6 @@ export default {
   data() {
     return {
       locale: zhCN,
-    };
-  },
-};
-</script> -->
-
-<template>
- <div style="height: 100%;" id="app">
-      <router-view />
-    </div>
-</template>
-
-<script>
-export default {
-  data() {
-    return {
     };
   },
 };
