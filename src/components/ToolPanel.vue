@@ -49,7 +49,9 @@
     </a-row>
 
     <div style="display: flex; flex-wrap: wrap; justify-content: flex-start">
-      <a-button type="primary" style="margin: 5px; flex: 1"> 发送 </a-button>
+      <a-button type="primary" @click="sendBtn" style="margin: 5px; flex: 1">
+        发送
+      </a-button>
       <a-button type="primary" style="margin: 5px; flex: 1"> 重启 </a-button>
       <a-button type="primary" style="margin: 5px; flex: 1"> 清空 </a-button>
       <a-button style="margin: 5px; flex: 1" type="primary"> 绘图 </a-button>
@@ -63,6 +65,19 @@ import type { SelectProps } from "ant-design-vue";
 import { portList } from "../utils/serial";
 import SerialPortSelect from "./select/SerialPortSelect.vue";
 import BaudRateSelect from "./Select/BaudRateSelect.vue";
+import { terminalWrite } from "../utils/bus";
+import { terminalStore } from "../utils/store";
 
-onMounted(() => {});
+let terminalIndex: Number;
+const sendBtn = () => {
+  // terminalStore().list.map((item) => {
+  //   console.info(item.index);
+  // });
+
+  console.info(terminalIndex);
+};
+onMounted(() => {
+  terminalIndex = terminalStore().list.at(-1);
+  console.log(terminalIndex);
+});
 </script>

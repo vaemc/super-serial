@@ -21,6 +21,8 @@
 import { defineComponent, ref } from "vue";
 import ToolPanel from "./ToolPanel.vue";
 import Terminal from "./Terminal.vue";
+import { terminalStore } from "../utils/store";
+
 export default defineComponent({
   components: {
     Terminal,
@@ -45,6 +47,8 @@ export default defineComponent({
         title: "串口" + activeKey.value,
         key: activeKey.value,
       });
+
+      terminalStore().list.push({ index: activeKey.value });
     };
 
     const remove = (targetKey: string) => {
@@ -62,6 +66,8 @@ export default defineComponent({
           activeKey.value = panes.value[0].key;
         }
       }
+      const list = terminalStore().list.filter((x) => x.index !== targetKey);
+      terminalStore().list = list;
     };
 
     const onEdit = (targetKey: string | MouseEvent, action: string) => {
