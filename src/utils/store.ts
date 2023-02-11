@@ -13,6 +13,7 @@ export const lastBaudRateStore = defineStore("portStore", {
 });
 export const terminalStore = defineStore("terminalStore", {
   state: () => ({
-    list: [{ key: 1 }] as any[],
+    list: [] as any[],
   }),
+  persist: true,
 });

@@ -14,7 +14,9 @@ import { uid } from "uid";
 import { terminalStore } from "../utils/store";
 
 const fitAddon = new FitAddon();
-
+const terminalId = ref();
+let terminalObj: any;
+terminalObj = terminalStore().list.at(-1);
 const terminal = new Terminal({
   fontSize: 14,
   allowProposedApi: true,
@@ -25,9 +27,6 @@ const terminal = new Terminal({
   },
 });
 
-emitter.on("terminal", (data: any) => {
-  terminal.writeln(data);
-});
 
 window.onresize = () => {
   for (let i = 0; i < 30; i++) {
@@ -35,23 +34,25 @@ window.onresize = () => {
   }
 };
 
-const terminalId = ref();
-let terminalObj: any;
+emitter.on(terminalObj.uid, (data: any) => {
+  terminal.writeln(data);
+});
+
 onBeforeMount(() => {
   terminalId.value = uid();
 });
 onMounted(() => {
-  terminalObj = terminalStore().list.at(-1);
 
   terminal.loadAddon(fitAddon);
   const terminalDiv = document.getElementById(terminalId.value)!;
   terminal.open(terminalDiv);
   fitAddon.fit();
 
-  for (let i = 0; i < 200; i++) {
-    terminal.writeln("12345");
-  }
+  terminal.writeln("12345");
 });
+
+
+
 </script>
 <style>
 .xterm-viewport::-webkit-scrollbar-track {

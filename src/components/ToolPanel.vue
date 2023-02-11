@@ -1,33 +1,27 @@
 <template>
-  <div
-    style="
+  <div style="
       display: flex;
       justify-content: center;
       flex-direction: column;
       padding: 10px;
-    "
-  >
-    <div
-      style="
+    ">
+    <div style="
         display: flex;
         justify-content: center;
         flex-direction: row;
         margin-bottom: 5px;
-      "
-    >
+      ">
       <div style="width: 60px; text-align: right; align-self: center">
         端口：
       </div>
       <SerialPortSelect />
     </div>
-    <div
-      style="
+    <div style="
         display: flex;
         justify-content: center;
         flex-direction: row;
         margin-bottom: 5px;
-      "
-    >
+      ">
       <div style="width: 60px; text-align: right; align-self: center">
         波特率：
       </div>
@@ -35,16 +29,11 @@
     </div>
     <a-button type="primary" style="margin-bottom: 5px">打开端口</a-button>
 
-    <a-textarea
-      placeholder="请输入内容"
-      :auto-size="{ minRows: 4, maxRows: 4 }"
-      allow-clear
-    />
+    <a-textarea placeholder="请输入内容" :auto-size="{ minRows: 4, maxRows: 4 }" allow-clear />
 
     <a-row style="margin-bottom: 5px">
       <a-col :span="12" style="display: flex; flex-wrap: nowrap">
-        <a-checkbox>发送新行</a-checkbox></a-col
-      >
+        <a-checkbox>发送新行</a-checkbox></a-col>
       <a-col :span="12"> <a-checkbox>发送HEX</a-checkbox> </a-col>
     </a-row>
 
@@ -67,11 +56,11 @@ import SerialPortSelect from "./select/SerialPortSelect.vue";
 import BaudRateSelect from "./Select/BaudRateSelect.vue";
 import { terminalWrite } from "../utils/bus";
 import { terminalStore } from "../utils/store";
-
+import { uid } from "uid";
 let terminalObj: any;
+terminalObj = terminalStore().list.at(-1);
 onMounted(() => {
-  terminalObj = terminalStore().list.at(-1);
-  console.log(terminalObj);
+
 });
 
 const sendBtn = () => {
@@ -80,5 +69,7 @@ const sendBtn = () => {
   // });
 
   console.info(terminalObj);
+
+  terminalWrite(terminalObj.uid, uid());
 };
 </script>

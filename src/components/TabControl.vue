@@ -1,14 +1,19 @@
 <template>
+  <a-modal v-model:visible="modalVisible" title="串口备注" @ok="modalOk">
+    <a-input v-model:value="inputTabName" placeholder="请输入串口名称" allow-clear />
+
+    <div style="margin-top: 10px">
+      <span>常用标签:&emsp;</span>
+      <a-tag style="margin-top: 5px" v-for="item in generalTagList" @click="generalTagClick(item.text)"
+        :key="item.text">{{ item.text }}</a-tag>
+    </div>
+  </a-modal>
   <a-tabs v-model:activeKey="activeKey" type="editable-card" @edit="onEdit">
-    <a-tab-pane
-      v-for="pane in panes"
-      :key="pane.key"
-      :closable="pane.closable"
-    >
+    <a-tab-pane v-for="pane in panes" :key="pane.key" :closable="pane.closable">
       <template #tab>
-        <span>
-          <api-two-tone two-tone-color="gray"  />
-          {{pane.title}}
+        <span @click="editTabNameBtn(pane)">
+          <api-two-tone two-tone-color="gray" />
+          {{ pane.title }}
         </span>
       </template>
       <!-- thunderbolt-two-tone -->
@@ -24,11 +29,14 @@
   </a-tabs>
 </template>
 <script lang="ts">
+import { message } from 'ant-design-vue';
 import { defineComponent, ref } from "vue";
 import ToolPanel from "./ToolPanel.vue";
 import Terminal from "./Terminal.vue";
 import { terminalStore } from "../utils/store";
-import { ThunderboltTwoTone, ApiTwoTone,AppleOutlined } from '@ant-design/icons-vue';
+import { ThunderboltTwoTone, ApiTwoTone, AppleOutlined } from '@ant-design/icons-vue';
+import { uid } from "uid";
+import { text } from "stream/consumers";
 export default defineComponent({
   components: {
     Terminal,
@@ -38,26 +46,31 @@ export default defineComponent({
     AppleOutlined
   },
   setup() {
-    const panes = ref<{ title: string; key: string; closable?: boolean }[]>([
-      {
-        title: "串口1",
-        key: "1",
-        closable: false,
-      },
-    ]);
-
+    console.info(terminalStore().list)
+    const uuid = uid();
+    const firstTab = {
+      title: "串口1",
+      key: "1",
+      closable: false,
+      uid: uuid
+    }
+    const panes = ref<{ title: string; key: string; closable?: boolean; uid: string }[]>(terminalStore().list);
+    if (terminalStore().list.length == 0) {
+      terminalStore().list.push(firstTab);
+    }
     const activeKey = ref(panes.value[0].key);
-
     const newTabIndex = ref(1);
-
     const add = () => {
+      const uuid = uid();
       activeKey.value = `${++newTabIndex.value}`;
-      panes.value.push({
+      const tab = {
         title: "串口" + activeKey.value,
         key: activeKey.value,
-      });
+        uid: uuid
+      }
+   //   panes.value.push(tab);
 
-      terminalStore().list.push({ key: activeKey.value });
+      terminalStore().list.push(tab);
     };
 
     const remove = (targetKey: string) => {
@@ -87,7 +100,72 @@ export default defineComponent({
       }
     };
 
+    const inputTabName = ref("");
+    const generalTagList = ref([
+      {
+        color: "#2db7f5",
+        text: "ESP8266",
+      },
+      {
+        color: "#f50",
+        text: "ESP32",
+      },
+      {
+        color: "#87d068",
+        text: "C2",
+      },
+      {
+        color: "#108ee9",
+        text: "C3",
+      },
+      {
+        color: "#108ee9",
+        text: "C6",
+      },
+      {
+        color: "#108ee9",
+        text: "S2",
+      },
+      {
+        color: "#108ee9",
+        text: "S3",
+      },
+    ])
+    const modalVisible = ref(false);
+    const modalOk = () => {
+
+      if (inputTabName.value == "") {
+        message.warn("备注不能为空");
+        return;
+      }
+
+      modalVisible.value = false;
+      panes.value.forEach((item) => {
+        if (item.key === activeKey.value) {
+          item.title = inputTabName.value;
+        }
+      });
+      inputTabName.value = "";
+
+    }
+    const generalTagClick = (text: string) => {
+      inputTabName.value += text;
+    }
+    const editTabNameBtn = (data: any) => {
+      if (activeKey.value == data.key) {
+        modalVisible.value = true
+      }
+    }
+
+
+
     return {
+      generalTagList,
+      inputTabName,
+      generalTagClick,
+      modalOk,
+      modalVisible,
+      editTabNameBtn,
       panes,
       activeKey,
       onEdit,
