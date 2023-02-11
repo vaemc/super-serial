@@ -4,6 +4,7 @@
     @dropdownVisibleChange="selectFocus"
     @focus="selectFocus"
     @change="selectChange"
+    style="width: 100px"
   >
     <a-select-option
       v-for="item in serialPortList"
@@ -18,7 +19,7 @@
   </a-select>
 </template>
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted,onBeforeMount } from "vue";
 import { portList } from "../../utils/serial";
 export default defineComponent({
   setup() {
@@ -38,6 +39,9 @@ export default defineComponent({
     onMounted(() => {
       refreshSerialPortList(true);
     });
+    // onBeforeMount(() => {
+    //   refreshSerialPortList(true);
+    // });
     return {
       serialPortList,
       selectSerialPort,

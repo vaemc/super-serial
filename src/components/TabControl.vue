@@ -3,9 +3,15 @@
     <a-tab-pane
       v-for="pane in panes"
       :key="pane.key"
-      :tab="pane.title"
       :closable="pane.closable"
     >
+      <template #tab>
+        <span>
+          <api-two-tone two-tone-color="gray"  />
+          {{pane.title}}
+        </span>
+      </template>
+      <!-- thunderbolt-two-tone -->
       <div style="display: flex; flex-direction: row">
         <div style="flex: 1">
           <Terminal />
@@ -22,11 +28,14 @@ import { defineComponent, ref } from "vue";
 import ToolPanel from "./ToolPanel.vue";
 import Terminal from "./Terminal.vue";
 import { terminalStore } from "../utils/store";
-
+import { ThunderboltTwoTone, ApiTwoTone,AppleOutlined } from '@ant-design/icons-vue';
 export default defineComponent({
   components: {
     Terminal,
     ToolPanel,
+    ThunderboltTwoTone,
+    ApiTwoTone,
+    AppleOutlined
   },
   setup() {
     const panes = ref<{ title: string; key: string; closable?: boolean }[]>([
@@ -48,7 +57,7 @@ export default defineComponent({
         key: activeKey.value,
       });
 
-      terminalStore().list.push({ index: activeKey.value });
+      terminalStore().list.push({ key: activeKey.value });
     };
 
     const remove = (targetKey: string) => {
@@ -66,7 +75,7 @@ export default defineComponent({
           activeKey.value = panes.value[0].key;
         }
       }
-      const list = terminalStore().list.filter((x) => x.index !== targetKey);
+      const list = terminalStore().list.filter((x) => x.key !== targetKey);
       terminalStore().list = list;
     };
 

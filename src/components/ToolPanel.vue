@@ -68,16 +68,17 @@ import BaudRateSelect from "./Select/BaudRateSelect.vue";
 import { terminalWrite } from "../utils/bus";
 import { terminalStore } from "../utils/store";
 
-let terminalIndex: Number;
+let terminalObj: any;
+onMounted(() => {
+  terminalObj = terminalStore().list.at(-1);
+  console.log(terminalObj);
+});
+
 const sendBtn = () => {
   // terminalStore().list.map((item) => {
-  //   console.info(item.index);
+  //   console.info(item.key);
   // });
 
-  console.info(terminalIndex);
+  console.info(terminalObj);
 };
-onMounted(() => {
-  terminalIndex = terminalStore().list.at(-1);
-  console.log(terminalIndex);
-});
 </script>

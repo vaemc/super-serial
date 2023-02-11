@@ -11,6 +11,7 @@ import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { onMounted, onBeforeMount, ref } from "vue";
 import { uid } from "uid";
+import { terminalStore } from "../utils/store";
 
 const fitAddon = new FitAddon();
 
@@ -35,11 +36,13 @@ window.onresize = () => {
 };
 
 const terminalId = ref();
-
+let terminalObj: any;
 onBeforeMount(() => {
   terminalId.value = uid();
 });
 onMounted(() => {
+  terminalObj = terminalStore().list.at(-1);
+
   terminal.loadAddon(fitAddon);
   const terminalDiv = document.getElementById(terminalId.value)!;
   terminal.open(terminalDiv);

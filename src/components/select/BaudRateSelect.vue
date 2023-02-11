@@ -1,5 +1,5 @@
 <template>
-  <a-select defaultValue="115200" :options="baudRateList"> </a-select>
+  <a-select defaultValue="115200" style="width: 100px"  :options="baudRateList"> </a-select>
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
