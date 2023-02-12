@@ -19,11 +19,10 @@
       <!-- thunderbolt-two-tone -->
       <div style="display: flex; flex-direction: row">
         <div style="flex: 1">
-          <!-- <Terminal /> -->
-          <component :is="panelComponents.get('Terminal')" :uid="pane.uid" :key="pane.uid"></component>
+          <Terminal />
         </div>
         <div style="flex: 0 0 200px">
-          <component :is="panelComponents.get('ToolPanel')" :uid="pane.uid" :key="pane.uid"></component>
+          <ToolPanel />
         </div>
       </div>
     </a-tab-pane>
@@ -31,30 +30,23 @@
 </template>
 <script lang="ts">
 import { message } from 'ant-design-vue';
-import { defineAsyncComponent, markRaw, defineComponent, ref } from "vue";
+import { defineComponent, ref } from "vue";
+import ToolPanel from "./ToolPanel.vue";
+import Terminal from "./Terminal.vue";
 import { serialPortPageStore } from "../utils/store";
 import { SerialPortPage } from "../model/serialPortPage";
 import { ThunderboltTwoTone, ApiTwoTone, AppleOutlined } from '@ant-design/icons-vue';
 import { uid } from "uid";
 export default defineComponent({
-
   components: {
+    Terminal,
+    ToolPanel,
     ThunderboltTwoTone,
     ApiTwoTone,
     AppleOutlined
   },
   setup() {
     console.info(serialPortPageStore().list)
-    const panelComponents = ref(new Map<string, any>())
-    panelComponents.value.set(
-      'ToolPanel',
-      markRaw(defineAsyncComponent(() => import('./ToolPanel.vue')))
-    )
-    panelComponents.value.set(
-      'Terminal',
-      markRaw(defineAsyncComponent(() => import('./Terminal.vue')))
-    )
-
     const uuid = uid();
     const firstTab = {
       title: "串口1",
@@ -81,7 +73,7 @@ export default defineComponent({
           baudRate: "115200"
         }
       } as SerialPortPage;
-      panes.value.push(tab);
+      //   panes.value.push(tab);
 
       serialPortPageStore().list.push(tab);
     };
@@ -167,14 +159,12 @@ export default defineComponent({
     const editTabNameBtn = (data: any) => {
       if (activeKey.value == data.uid) {
         modalVisible.value = true
-        inputTabName.value = data.title;
       }
     }
 
 
 
     return {
-      panelComponents,
       generalTagList,
       inputTabName,
       generalTagClick,

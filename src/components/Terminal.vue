@@ -11,12 +11,19 @@ import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import { onMounted, onBeforeMount, ref } from "vue";
 import { uid } from "uid";
-import { terminalStore } from "../utils/store";
+import { serialPortPageStore } from "../utils/store";
+import { SerialPortPage } from "../model/serialPortPage";
+
+
+
 
 const fitAddon = new FitAddon();
 const terminalId = ref();
-let terminalObj: any;
-terminalObj = terminalStore().list.at(-1);
+
+
+const serialPortPageUid= defineProps(['uid'])
+let serialPortPage: SerialPortPage = serialPortPageStore().list.find(x => x.uid === serialPortPageUid.uid) as SerialPortPage;
+
 const terminal = new Terminal({
   fontSize: 14,
   allowProposedApi: true,
@@ -34,7 +41,7 @@ window.onresize = () => {
   }
 };
 
-emitter.on(terminalObj.uid, (data: any) => {
+emitter.on(serialPortPage.uid, (data: any) => {
   terminal.writeln(data);
 });
 

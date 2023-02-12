@@ -1,19 +1,23 @@
 import { defineStore } from "pinia";
+import { SerialPortPage } from "../model/serialPortPage";
+
 export const portStore = defineStore("portStore", {
   state: () => ({
     port: "",
   }),
 });
 
-export const lastBaudRateStore = defineStore("portStore", {
+// export const lastBaudRateStore = defineStore("portStore", {
+//   state: () => ({
+//     value: "115200",
+//   }),
+//   persist: true,
+// });
+
+export const serialPortPageStore = defineStore("serialPortPageStore", {
   state: () => ({
-    value: "115200",
+    list: [] as SerialPortPage[],
   }),
   persist: true,
 });
-export const terminalStore = defineStore("terminalStore", {
-  state: () => ({
-    list: [] as any[],
-  }),
-  persist: true,
-});
+

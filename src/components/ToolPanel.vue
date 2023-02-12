@@ -14,7 +14,7 @@
       <div style="width: 60px; text-align: right; align-self: center">
         端口：
       </div>
-      <SerialPortSelect />
+      <SerialPortSelect @portChange="portChange" />
     </div>
     <div style="
         display: flex;
@@ -25,9 +25,9 @@
       <div style="width: 60px; text-align: right; align-self: center">
         波特率：
       </div>
-      <BaudRateSelect />
+      <BaudRateSelect :defaultValue="defaultBaudRate" @baudRateChange="baudRateChange" />
     </div>
-    <a-button type="primary" style="margin-bottom: 5px">打开端口</a-button>
+    <a-button @click="openPortBtn()" type="primary" style="margin-bottom: 5px">打开端口</a-button>
 
     <a-textarea placeholder="请输入内容" :auto-size="{ minRows: 4, maxRows: 4 }" allow-clear />
 
@@ -52,24 +52,86 @@
 import { onMounted, onBeforeMount, ref } from "vue";
 import type { SelectProps } from "ant-design-vue";
 import { portList } from "../utils/serial";
+import { SerialPort } from "serialport";
+import { ReadlineParser } from "@serialport/parser-readline";
 import SerialPortSelect from "./select/SerialPortSelect.vue";
 import BaudRateSelect from "./Select/BaudRateSelect.vue";
 import { terminalWrite } from "../utils/bus";
-import { terminalStore } from "../utils/store";
-import { uid } from "uid";
-let terminalObj: any;
-terminalObj = terminalStore().list.at(-1);
+import { serialPortPageStore } from "../utils/store";
+import { SerialPortPage } from "../model/serialPortPage";
+
+
+
+
+const serialPortPageUid = defineProps(['uid'])
+const selectedSerialPort = ref();
+const selectedbaudRate = ref();
+
+const defaultBaudRate = ref();
+let serialPortPage: SerialPortPage = serialPortPageStore().list.find(x => x.uid === serialPortPageUid.uid) as SerialPortPage;
+defaultBaudRate.value = serialPortPage.serial?.baudRate
+
+
+const portChange = (data: string) => {
+  selectedSerialPort.value = data;
+}
+
+const baudRateChange = (data: string) => {
+  selectedbaudRate.value = data;
+}
+const openPortBtn = () => {
+  console.log(selectedSerialPort.value);
+  console.log(selectedbaudRate.value);
+
+  serialPortPageStore().list = serialPortPageStore().list.map(item => {
+    if (item.uid == serialPortPage.uid) {
+      item.serial = {
+        port: selectedSerialPort.value,
+        baudRate: selectedbaudRate.value
+      }
+      return item;
+    }
+    return item;
+  })
+  // const serialPort = new SerialPort({
+  //   path: port,
+  //   baudRate: baudRate,
+  //   autoOpen: false,
+  // });
+
+  // serialPort.on("close", () => { });
+
+  // serialPort.on("open", () => {
+  //   const parser = serialPort.pipe(new ReadlineParser());
+  //   parser.on("data", (data) => {
+  //     //console.info(data);
+  //     // this.terminal.writeln(data);
+  //     emitter.emit(uid);
+  //   });
+  //   // this.syncSerialPortConnectState();
+  //   emitter.emit(uid);
+  // });
+
+  // serialPort.open((error) => {
+  //   if (error) {
+  //     //端口无法打开
+  //     emitter.emit(uid);
+  //   }
+  // });
+}
 onMounted(() => {
 
 });
 
 const sendBtn = () => {
-  // terminalStore().list.map((item) => {
+  // serialPortPageStore().list.map((item) => {
   //   console.info(item.key);
   // });
 
-  console.info(terminalObj);
+  //  console.info(serialPortPage);
 
-  terminalWrite(terminalObj.uid, uid());
+  terminalWrite(serialPortPage.uid, "111111111");
+
+  serialPortPageStore().list = [];
 };
 </script>
