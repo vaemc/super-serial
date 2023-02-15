@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%">
-    <div :id="terminalId" style="height: calc(100vh - 56px)" class="xterm"></div>
+    <div :id="terminalId" style="height: calc(100vh - 53px)" class="xterm"></div>
   </div>
 </template>
 <script setup lang="ts">
@@ -13,14 +13,8 @@ import { onMounted, onBeforeMount, ref } from "vue";
 import { uid } from "uid";
 import { serialPortPageStore } from "../utils/store";
 import { SerialPortPage } from "../model/serialPortPage";
-
-
-
-
 const fitAddon = new FitAddon();
 const terminalId = ref();
-
-
 const serialPortPageUid= defineProps(['uid'])
 let serialPortPage: SerialPortPage = serialPortPageStore().list.find(x => x.uid === serialPortPageUid.uid) as SerialPortPage;
 
@@ -33,7 +27,6 @@ const terminal = new Terminal({
     magenta: "#e39ef7",
   },
 });
-
 
 window.onresize = () => {
   for (let i = 0; i < 30; i++) {
@@ -48,17 +41,14 @@ emitter.on(serialPortPage.uid, (data: any) => {
 onBeforeMount(() => {
   terminalId.value = uid();
 });
-onMounted(() => {
 
+onMounted(() => {
   terminal.loadAddon(fitAddon);
   const terminalDiv = document.getElementById(terminalId.value)!;
   terminal.open(terminalDiv);
   fitAddon.fit();
-
   terminal.writeln("12345");
 });
-
-
 
 </script>
 <style>
