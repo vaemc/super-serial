@@ -11,7 +11,7 @@ pinia.use(piniaPluginPersistedstate);
 createApp(App)
   .use(pinia)
   .use(Antd)
-  .use(i18n)
+  // .use(i18n)
   .mount("#app")
   .$nextTick(() => {
     postMessage({ payload: "removeLoading" }, "*");

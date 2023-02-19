@@ -13,10 +13,18 @@ import { onMounted, onBeforeMount, ref } from "vue";
 import { uid } from "uid";
 import { serialPortPageStore } from "../utils/store";
 import { SerialPortPage } from "../model/serialPortPage";
+import { ipcRenderer } from 'electron'
+
 const fitAddon = new FitAddon();
 const terminalId = ref();
-const serialPortPageUid= defineProps(['uid'])
+const serialPortPageUid = defineProps(['uid'])
 let serialPortPage: SerialPortPage = serialPortPageStore().list.find(x => x.uid === serialPortPageUid.uid) as SerialPortPage;
+
+ipcRenderer.on('fit', () => {
+  for (let i = 0; i < 30; i++) {
+    fitAddon.fit();
+  }
+})
 
 const terminal = new Terminal({
   fontSize: 14,
