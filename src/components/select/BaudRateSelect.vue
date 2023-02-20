@@ -15,8 +15,9 @@ export default defineComponent({
 
     const { defaultBaudRate } = toRefs(props);
 
+
     onMounted(() => {
-      emit("baudRateChange", defaultBaudRate);
+      emit("baudRateChange", defaultBaudRate.value);
     })
     const selectedChange = (data: string) => {
       emit("baudRateChange", data)
