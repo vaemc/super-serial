@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import electron from "vite-plugin-electron";
 import renderer from "vite-plugin-electron-renderer";
+import { viteExternalsPlugin } from "vite-plugin-externals";
 import pkg from "./package.json";
 
 // https://vitejs.dev/config/
@@ -68,6 +69,9 @@ export default defineConfig(({ command }) => {
         optimizeDeps: {
           include: ["serialport"],
         },
+      }),
+      viteExternalsPlugin({
+        SerialPort: 'SerialPort',
       }),
     ],
     server:

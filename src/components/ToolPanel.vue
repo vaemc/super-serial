@@ -144,6 +144,11 @@ const syncState = () => {
 const openPortBtn = () => {
   console.info(serialPortPageStore().list);
 
+  if (selectedSerialPort.value === "") {
+    message.warn("请选择端口");
+    return;
+  }
+
   serialPortPageStore().list = serialPortPageStore().list.map((item) => {
     if (item.uid == serialPortPage.uid) {
       item.serial = {
