@@ -64,7 +64,7 @@ async function createWindow() {
   win.on("maximize", () => {
     win?.webContents.send("fit");
   });
-
+  win.webContents.openDevTools();
   Menu.setApplicationMenu(null);
 
   if (process.env.VITE_DEV_SERVER_URL) {

@@ -1,11 +1,20 @@
 <template>
   <a-modal v-model:visible="modalVisible" title="串口备注" @ok="modalOk">
-    <a-input v-model:value="inputTabName" placeholder="请输入串口名称" allow-clear />
+    <a-input
+      v-model:value="inputTabName"
+      placeholder="请输入串口名称"
+      allow-clear
+    />
 
     <div style="margin-top: 10px">
       <span>常用标签:&emsp;</span>
-      <a-tag style="margin-top: 5px" v-for="item in generalTagList" @click="generalTagClick(item.text)"
-        :key="item.text">{{ item.text }}</a-tag>
+      <a-tag
+        style="margin-top: 5px"
+        v-for="item in generalTagList"
+        @click="generalTagClick(item.text)"
+        :key="item.text"
+        >{{ item.text }}</a-tag
+      >
     </div>
   </a-modal>
   <a-tabs v-model:activeKey="activeKey" type="editable-card" @edit="onEdit">
@@ -19,10 +28,18 @@
       <!-- thunderbolt-two-tone -->
       <div style="display: flex; flex-direction: row">
         <div style="flex: 1">
-          <component :is="panelComponents.get('Terminal')" :uid="pane.uid" :key="pane.uid"></component>
+          <component
+            :is="panelComponents.get('Terminal')"
+            :uid="pane.uid"
+            :key="pane.uid"
+          ></component>
         </div>
         <div style="flex: 0 0 200px">
-          <component :is="panelComponents.get('ToolPanel')" :uid="pane.uid" :key="pane.uid"></component>
+          <component
+            :is="panelComponents.get('ToolPanel')"
+            :uid="pane.uid"
+            :key="pane.uid"
+          ></component>
         </div>
       </div>
     </a-tab-pane>
@@ -85,7 +102,7 @@ export default defineComponent({
           baudRate: "115200",
         },
       } as SerialPortPage;
-      // panes.value.push(tab);
+      panes.value.push(tab);
       serialPortPageStore().list.push(tab);
     };
 

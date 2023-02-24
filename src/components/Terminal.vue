@@ -1,6 +1,17 @@
 <template>
   <div style="width: 100%">
-    <div :id="terminalId" style="height: calc(100vh - 53px)" class="xterm"></div>
+    <!-- <div>
+      <a-input-group compact>
+        <a-input style="width: calc(100% - 200px)" />
+        <a-button type="primary">上一个</a-button>
+        <a-button type="primary">下一个</a-button>
+      </a-input-group>
+    </div> -->
+    <div
+      :id="terminalId"
+      style="height: calc(100vh - 53px)"
+      class="xterm"
+    ></div>
   </div>
 </template>
 <script setup lang="ts">
@@ -13,18 +24,20 @@ import { onMounted, onBeforeMount, ref } from "vue";
 import { uid } from "uid";
 import { serialPortPageStore } from "../utils/store";
 import { SerialPortPage } from "../model/serialPortPage";
-import { ipcRenderer } from 'electron'
+import { ipcRenderer } from "electron";
 
 const fitAddon = new FitAddon();
 const terminalId = ref();
-const serialPortPageUid = defineProps(['uid'])
-let serialPortPage: SerialPortPage = serialPortPageStore().list.find(x => x.uid === serialPortPageUid.uid) as SerialPortPage;
+const serialPortPageUid = defineProps(["uid"]);
+let serialPortPage: SerialPortPage = serialPortPageStore().list.find(
+  (x) => x.uid === serialPortPageUid.uid
+) as SerialPortPage;
 
-ipcRenderer.on('fit', () => {
+ipcRenderer.on("fit", () => {
   for (let i = 0; i < 30; i++) {
     fitAddon.fit();
   }
-})
+});
 
 const terminal = new Terminal({
   fontSize: 14,
@@ -36,15 +49,22 @@ const terminal = new Terminal({
   },
 });
 
+serialPortPageStore().list = serialPortPageStore().list.map((item) => {
+  if (serialPortPage.uid === item.uid) {
+    item.terminal = terminal;
+  }
+  return item;
+});
+
 window.onresize = () => {
   for (let i = 0; i < 30; i++) {
     fitAddon.fit();
   }
 };
 
-emitter.on(serialPortPage.uid, (data: any) => {
-  terminal.writeln(data);
-});
+// emitter.on(serialPortPage.uid, (data: any) => {
+//   terminal.writeln(data);
+// });
 
 onBeforeMount(() => {
   terminalId.value = uid();
@@ -55,9 +75,8 @@ onMounted(() => {
   const terminalDiv = document.getElementById(terminalId.value)!;
   terminal.open(terminalDiv);
   fitAddon.fit();
-  terminal.writeln("12345");
+ 
 });
-
 </script>
 <style>
 .xterm-viewport::-webkit-scrollbar-track {
