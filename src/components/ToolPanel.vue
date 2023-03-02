@@ -58,7 +58,9 @@
         ></a-col
       >
       <a-col :span="12">
-        <a-checkbox :disabled="!isOpen">发送HEX</a-checkbox>
+        <a-checkbox v-model:checked="isSendHex" :disabled="!isOpen"
+          >发送HEX</a-checkbox
+        >
       </a-col>
     </a-row>
 
@@ -105,11 +107,12 @@ const selectedbaudRate = ref<string>();
 const openBtnText = ref("打开端口");
 const openBtnType = ref("primary");
 
-const isOpen = ref(true);
+const isOpen = ref(false);
 
 const content = ref();
 
 const isSendNewLine = ref(false);
+const isSendHex = ref(false);
 
 let serialPort = {} as SerialPort;
 
@@ -192,12 +195,21 @@ const openPortBtn = () => {
     }
   });
 };
-onMounted(() => {});
+onMounted(() => {
+});
 
 const sendBtn = () => {
-  serialPort.port?.write(
-    Buffer.from(content.value + (isSendNewLine.value ? "\r\n" : ""), "utf8")
-  );
+  if (isSendHex.value) {
+    let hexArray = content.value.split(" ");
+    hexArray = hexArray.map((item: string) => {
+      return parseInt(item, 16);
+    });
+    serialPort.port?.write(Buffer.from(hexArray));
+  } else {
+    serialPort.port?.write(
+      Buffer.from(content.value + (isSendNewLine.value ? "\r\n" : ""), "utf8")
+    );
+  }
 };
 
 const clearBtn = () => {
