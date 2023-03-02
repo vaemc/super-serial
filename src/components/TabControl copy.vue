@@ -178,7 +178,7 @@ export default defineComponent({
 </script>
 
 <style>
-/* .ant-tabs-nav {
+.ant-tabs-nav {
   margin-bottom: 13px !important;
-} */
+}
 </style>

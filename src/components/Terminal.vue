@@ -9,7 +9,7 @@
     </div> -->
     <div
       :id="terminalId"
-      style="height: calc(100vh - 53px)"
+     
       class="xterm"
     ></div>
   </div>
