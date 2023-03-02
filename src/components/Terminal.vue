@@ -9,7 +9,6 @@
     </div> -->
     <div
       :id="terminalId"
-     
       class="xterm"
     ></div>
   </div>

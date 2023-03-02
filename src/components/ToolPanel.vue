@@ -195,8 +195,7 @@ const openPortBtn = () => {
     }
   });
 };
-onMounted(() => {
-});
+onMounted(() => {});
 
 const sendBtn = () => {
   if (isSendHex.value) {

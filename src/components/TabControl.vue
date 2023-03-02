@@ -26,7 +26,7 @@
         </span>
       </template>
       <!-- thunderbolt-two-tone -->
-      <div style="display: flex; flex-direction: row">
+      <!-- <div style="display: flex; flex-direction: row">
         <div style="flex: 1">
           <component
             :is="panelComponents.get('Terminal')"
@@ -35,6 +35,22 @@
           ></component>
         </div>
         <div style="flex: 0 0 200px">
+          <component
+            :is="panelComponents.get('ToolPanel')"
+            :uid="pane.uid"
+            :key="pane.uid"
+          ></component>
+        </div>
+      </div> -->
+      <div class="box">
+        <div class="row content">
+          <component
+            :is="panelComponents.get('Terminal')"
+            :uid="pane.uid"
+            :key="pane.uid"
+          ></component>
+        </div>
+        <div class="row footer">
           <component
             :is="panelComponents.get('ToolPanel')"
             :uid="pane.uid"
@@ -177,8 +193,27 @@ export default defineComponent({
 });
 </script>
 
-<style>
-/* .ant-tabs-nav {
+<!-- <style>
+.ant-tabs-nav {
   margin-bottom: 13px !important;
-} */
+}
+</style> -->
+<style>
+.box {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.box .row.header {
+  flex: 0 1 auto;
+  padding: 10px 10px 0 10px;
+}
+.box .row.content {
+  flex: 1 1 auto;
+
+}
+.box .row.footer {
+  flex: 0 1 auto;
+}
 </style>
